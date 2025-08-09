@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #023e8a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -16,10 +16,10 @@
         }
 
         .login-contenedor {
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px black;
             padding: 40px;
             width: 100%;
             max-width: 400px;
@@ -35,7 +35,7 @@
         .logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #667eea, #023e8a);
             border-radius: 50%;
             margin: 0 auto 15px;
             display: flex;
@@ -90,7 +90,7 @@
 
         form button {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #023e8a 100%);
             color: white;
             border: none;
             padding: 16px 20px;
@@ -105,7 +105,7 @@
         }
 
         form button:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            background: linear-gradient(135deg, #5a6fd8 0%, #023e8a 100%);
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
