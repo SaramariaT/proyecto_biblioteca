@@ -19,7 +19,7 @@
             background: white;
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 20px 40px black;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             padding: 40px;
             width: 100%;
             max-width: 400px;
@@ -42,9 +42,6 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .logo {
             background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQonzBOsKMupiWBbezX0-Bt8OmK09L3hAoaug&s');
             background-size: cover;
             background-position: center;
@@ -71,7 +68,7 @@
         }
 
         form input {
-            width: 90%;
+            width: 100%;
             padding: 15px 20px;
             border: 2px solid #e1e5e9;
             border-radius: 12px;
@@ -80,6 +77,7 @@
             transition: all 0.3s ease;
             outline: none;
             margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
         form input:focus {
@@ -114,6 +112,17 @@
             transform: translateY(0);
         }
 
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+
         @media (max-width: 480px) {
             .login-contenedor {
                 padding: 30px 20px;
@@ -133,11 +142,15 @@
             <h1 class="title">Biblioteca Escolar</h1>
         </div>
 
-        <form action="#" method="post">
+        <?php if(session()->getFlashdata('error')): ?>
+            <p class="error"><?= session()->getFlashdata('error') ?></p>
+        <?php endif; ?>
+
+        <form action="<?= base_url('login/autenticar') ?>" method="post">
             <label>Usuario:</label><br>
-            <input type="text" name="usuario"><br>
+            <input type="text" name="usuario" required><br>
             <label>Contraseña:</label><br>
-            <input type="password" name="password"><br><br>
+            <input type="password" name="password" required><br><br>
             <button type="submit">Ingresar</button>
         </form>
     </div>
