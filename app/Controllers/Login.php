@@ -33,7 +33,7 @@ class Login extends BaseController
         if (!session()->get('logged_in')) {
             return redirect()->to('/');
         }
-        return view('panel');
+        return view('panel/index');
     }
     
     public function salir()
