@@ -27,3 +27,10 @@ $routes->get('ejemplares/delete/(:num)', 'Ejemplares::delete/$1');
 
 $routes->get('ejemplares/ver/(:num)', 'Ejemplares::ver/$1');
 
+$routes->get('usuarios-biblioteca', 'UsuariosBiblioteca::index');
+$routes->get('usuarios-biblioteca/create', 'UsuariosBiblioteca::create');
+$routes->post('usuarios-biblioteca/store', 'UsuariosBiblioteca::store');
+$routes->get('usuarios-biblioteca/edit/(:num)', 'UsuariosBiblioteca::edit/$1');
+$routes->post('usuarios-biblioteca/update/(:num)', 'UsuariosBiblioteca::update/$1');
+$routes->get('usuarios-biblioteca/delete/(:num)', 'UsuariosBiblioteca::delete/$1');
+

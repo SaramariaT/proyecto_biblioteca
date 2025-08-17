@@ -12,7 +12,7 @@
                 <h4 class="text-center">Menú</h4>
                 <ul class="nav flex-column px-3">
                     <li class="nav-item"><a class="nav-link" href="<?= base_url('libros') ?>">📚 Libros</a></li>
-                    <li class="nav-item"><a class="nav-link" href="<?= base_url('usuarios') ?>">👤 Usuarios</a></li>
+                    <a class="nav-link" href="<?= base_url('usuarios-biblioteca') ?>">👤 Usuarios</a>
                     <li class="nav-item"><a class="nav-link text-danger" href="<?= base_url('login/salir') ?>">🔒 Cerrar sesión</a></li>
                 </ul>
             </nav>
