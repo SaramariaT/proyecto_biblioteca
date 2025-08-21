@@ -64,16 +64,23 @@ class Prestamos extends Controller
     // Ruta: /prestamos/devolver/{id}
     public function devolver($id)
     {
-        // Marcar préstamo como devuelto con retraso si aplica
-        $this->modelo->marcarDevueltoConRetraso($id);
+        $prestamo = $this->modelo->marcarDevueltoConRetraso($id);
+        $idEjemplar = $prestamo['id_ejemplar'];
 
-        // Obtener el préstamo para saber qué ejemplar actualizar
-        $prestamo = $this->modelo->find($id);
+        // Verificamos antes de actualizar
+        dd([
+            'idEjemplar' => $idEjemplar,
+            'prestamo' => $prestamo,
+            'ejemplarAntes' => $this->ejemplarModel->find($idEjemplar)
+        ]);
 
-        // Marcar ejemplar como disponible
-        $this->ejemplarModel->update($prestamo['id_ejemplar'], [
+        // Actualizamos el ejemplar
+        $this->ejemplarModel->update($idEjemplar, [
             'estado' => 'Disponible'
         ]);
+
+        // Verificamos después de actualizar
+        dd($this->ejemplarModel->find($idEjemplar));
 
         return redirect()->to(base_url('prestamos'));
     }
@@ -117,7 +124,6 @@ class Prestamos extends Controller
         $fechaReal = $this->request->getPost('fecha_real_devolucion');
         $retrasoManual = $this->request->getPost('retraso') === '1';
 
-        // Determinar si hay retraso automáticamente
         $retraso = false;
         if ($estado === 'Devuelto' && $fechaReal && $fechaReal > $fechaDevolucion) {
             $retraso = true;
@@ -125,7 +131,6 @@ class Prestamos extends Controller
             $retraso = true;
         }
 
-        // Determinar progreso
         $progreso = ($estado === 'Devuelto') ? 'completado' : 'en curso';
 
         $datos = [
@@ -141,9 +146,14 @@ class Prestamos extends Controller
 
         $this->modelo->update($id, $datos);
 
+        // 🔓 Liberar ejemplar si el préstamo fue devuelto
+        if ($estado === 'Devuelto') {
+            $ejemplarModel = new \App\Models\EjemplarModel();
+            $ejemplarModel->update($datos['id_ejemplar'], ['estado' => 'Disponible']);
+        }
+
         return redirect()->to(base_url('prestamos'));
     }
-
 
 
 }

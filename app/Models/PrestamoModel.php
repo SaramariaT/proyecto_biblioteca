@@ -36,7 +36,7 @@ class PrestamoModel extends Model
     public function obtenerTodos()
     {
         return $this->db->table($this->table . ' p')
-            ->select('p.*, u.nombre AS usuario, e.codigo_ejemplar AS ejemplar, l.titulo AS libro')
+            ->select('p.*, u.nombre AS usuario, e.codigo_ejemplar AS ejemplar, e.estado AS estado_ejemplar, l.titulo AS libro')
             ->join('usuarios_biblioteca u', 'p.id_usuario = u.id')
             ->join('ejemplares e', 'p.id_ejemplar = e.id')
             ->join('libros l', 'e.id_libro = l.id')
@@ -51,11 +51,21 @@ class PrestamoModel extends Model
         $hoy = date('Y-m-d');
         $retraso = $hoy > $prestamo['fecha_devolucion'];
 
-        return $this->update($id, [
+        $this->update($id, [
             'estado' => 'Devuelto',
             'fecha_real_devolucion' => $hoy,
             'retraso' => $retraso,
-            'progreso' => 'completado' // ← actualizado al devolver
+            'progreso' => 'completado'
         ]);
+
+        // Devuelve el préstamo original con campos actualizados
+        $prestamo['estado'] = 'Devuelto';
+        $prestamo['fecha_real_devolucion'] = $hoy;
+        $prestamo['retraso'] = $retraso;
+        $prestamo['progreso'] = 'completado';
+
+        return $prestamo;
     }
+
+
 }

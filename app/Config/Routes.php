@@ -40,4 +40,3 @@ $routes->post('prestamos/guardar', 'Prestamos::guardar');
 $routes->get('prestamos/devolver/(:num)', 'Prestamos::devolver/$1');
 $routes->get('prestamos/editar/(:num)', 'Prestamos::editar/$1');
 $routes->post('prestamos/actualizar/(:num)', 'Prestamos::actualizar/$1');
-
