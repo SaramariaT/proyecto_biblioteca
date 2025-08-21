@@ -34,3 +34,10 @@ $routes->get('usuarios-biblioteca/edit/(:num)', 'UsuariosBiblioteca::edit/$1');
 $routes->post('usuarios-biblioteca/update/(:num)', 'UsuariosBiblioteca::update/$1');
 $routes->get('usuarios-biblioteca/delete/(:num)', 'UsuariosBiblioteca::delete/$1');
 
+$routes->get('prestamos', 'Prestamos::index');
+$routes->get('prestamos/nuevo', 'Prestamos::nuevo');
+$routes->post('prestamos/guardar', 'Prestamos::guardar');
+$routes->get('prestamos/devolver/(:num)', 'Prestamos::devolver/$1');
+$routes->get('prestamos/editar/(:num)', 'Prestamos::editar/$1');
+$routes->post('prestamos/actualizar/(:num)', 'Prestamos::actualizar/$1');
+
