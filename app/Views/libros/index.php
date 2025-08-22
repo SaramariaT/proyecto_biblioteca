@@ -2,7 +2,13 @@
 <?= $this->section('content') ?>
 
 <h2>Listado de Libros</h2>
-<a href="<?= base_url('libros/create') ?>" class="btn btn-primary mb-3">Agregar Libro</a>
+
+<div class="mb-3 d-flex gap-2">
+    <a href="<?= base_url('libros/create') ?>" class="btn btn-primary">➕ Agregar Libro</a>
+    <a href="<?= base_url('reportes/libros_estado_pdf') ?>" class="btn btn-outline-info">📘 Reporte Detallado</a>
+</div>
+
+
 <table class="table table-bordered">
     <thead>
     <tr>
@@ -26,7 +32,6 @@
                 <a href="<?= base_url('ejemplares/create/' . $libro['id']) ?>" class="btn btn-info btn-sm">Agregar ejemplar</a>
                 <a href="<?= base_url('ejemplares/ver/' . $libro['id']) ?>" class="btn btn-info">Ver ejemplares</a>
             </td>
-
         </tr>
         <?php endforeach; ?>
     </tbody>
