@@ -4,7 +4,12 @@
 <h2>Agregar Libro</h2>
 <form action="<?= base_url('libros/store') ?>" method="post" class="row g-3">
 
-    <div class="col-md-6">
+    <div class="col-md-4">
+        <label for="codigo" class="form-label">Código</label>
+        <input type="text" name="codigo" class="form-control" required>
+    </div>
+
+    <div class="col-md-8">
         <label for="titulo" class="form-label">Título</label>
         <input type="text" name="titulo" class="form-control" required>
     </div>
@@ -15,33 +20,28 @@
     </div>
 
     <div class="col-md-6">
-        <label for="editorial" class="form-label">Editorial</label>
-        <input type="text" name="editorial" class="form-control">
+        <label for="genero" class="form-label">Género</label>
+        <input type="text" name="genero" class="form-control">
     </div>
 
-    <div class="col-md-3">
-        <label for="anio_publicacion" class="form-label">Año de publicación</label>
-        <input type="number" name="anio_publicacion" class="form-control" min="1900" max="2099">
+    <div class="col-md-4">
+        <label for="paginas" class="form-label">Páginas</label>
+        <input type="number" name="paginas" class="form-control" min="1">
     </div>
 
-    <div class="col-md-3">
-        <label for="precio_venta" class="form-label">Precio</label>
-        <input type="number" step="0.01" name="precio_venta" class="form-control">
+    <div class="col-md-4">
+        <label for="numero_ejemplar" class="form-label">Número de ejemplar</label>
+        <input type="number" name="numero_ejemplar" class="form-control" min="1">
     </div>
 
-    <div class="col-md-3">
-        <label for="stock" class="form-label">Stock</label>
-        <input type="number" name="stock" class="form-control" min="0">
+    <div class="col-md-4">
+        <label for="total_ejemplares" class="form-label">Total de ejemplares</label>
+        <input type="number" name="total_ejemplares" class="form-control" min="1">
     </div>
 
     <div class="col-md-6">
-        <label for="id_categoria" class="form-label">Categoría</label>
-        <select name="id_categoria" class="form-select" required>
-            <option value="">Seleccionar categoría</option>
-            <?php foreach ($categorias as $cat): ?>
-                <option value="<?= $cat['id'] ?>"><?= $cat['nom_categoria'] ?></option>
-            <?php endforeach; ?>
-        </select>
+        <label for="nivel" class="form-label">Nivel</label>
+        <input type="text" name="nivel" class="form-control">
     </div>
 
     <div class="col-12">

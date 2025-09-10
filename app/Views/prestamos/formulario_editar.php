@@ -3,14 +3,14 @@
 
 <h2>✏️ Editar Préstamo</h2>
 
-<form action="<?= base_url('prestamos/actualizar/' . $prestamo['id']) ?>" method="post" class="mt-4">
+<form action="<?= base_url('prestamos/actualizar/' . esc($prestamo['id'])) ?>" method="post" class="mt-4">
 
     <!-- Usuario -->
     <div class="mb-3">
         <label for="id_usuario" class="form-label">Usuario</label>
         <select name="id_usuario" id="id_usuario" class="form-select" required>
             <?php foreach ($usuarios as $u): ?>
-                <option value="<?= $u['id'] ?>" <?= $u['id'] == $prestamo['id_usuario'] ? 'selected' : '' ?>>
+                <option value="<?= esc($u['id']) ?>" <?= $u['id'] == $prestamo['id_usuario'] ? 'selected' : '' ?>>
                     <?= esc($u['nombre']) ?>
                 </option>
             <?php endforeach ?>
@@ -22,7 +22,7 @@
         <label for="id_ejemplar" class="form-label">Ejemplar</label>
         <select name="id_ejemplar" id="id_ejemplar" class="form-select" required>
             <?php foreach ($ejemplares as $e): ?>
-                <option value="<?= $e['id'] ?>" <?= $e['id'] == $prestamo['id_ejemplar'] ? 'selected' : '' ?>>
+                <option value="<?= esc($e['id']) ?>" <?= $e['id'] == $prestamo['id_ejemplar'] ? 'selected' : '' ?>>
                     <?= esc($e['titulo']) ?> (<?= esc($e['codigo_ejemplar']) ?>)
                 </option>
             <?php endforeach ?>
@@ -55,8 +55,9 @@
     <div class="mb-3">
         <label for="estado" class="form-label">Estado</label>
         <select name="estado" id="estado" class="form-select">
-            <option value="pendiente" <?= $prestamo['estado'] === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
-            <option value="devuelto" <?= $prestamo['estado'] === 'devuelto' ? 'selected' : '' ?>>Devuelto</option>
+            <option value="Prestado" <?= $prestamo['estado'] === 'Prestado' ? 'selected' : '' ?>>Prestado</option>
+            <option value="Devuelto" <?= $prestamo['estado'] === 'Devuelto' ? 'selected' : '' ?>>Devuelto</option>
+            <option value="Retrasado" <?= $prestamo['estado'] === 'Retrasado' ? 'selected' : '' ?>>Retrasado</option>
         </select>
     </div>
 
@@ -74,5 +75,10 @@
     <a href="<?= base_url('prestamos') ?>" class="btn btn-secondary ms-2">↩️ Cancelar</a>
 </form>
 
-<?= $this->endSection() ?>
+<script>
+    document.getElementById('fecha_prestamo').addEventListener('change', function() {
+        document.getElementById('fecha_devolucion').min = this.value;
+    });
+</script>
 
+<?= $this->endSection() ?>

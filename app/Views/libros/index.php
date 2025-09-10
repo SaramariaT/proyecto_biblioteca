@@ -8,25 +8,32 @@
     <a href="<?= base_url('reportes/libros_estado_pdf') ?>" class="btn btn-outline-info">📘 Reporte Detallado</a>
 </div>
 
-
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th>Título</th><th>Autor</th><th>Editorial</th>
-        <th>Año</th><th>Stock</th><th>Categoría</th><th>Acciones</th>
+        <th>Código</th>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Género</th>
+        <th>Páginas</th>
+        <th>N° Ejemplar</th>
+        <th>Total Ejemplares</th>
+        <th>Nivel</th>
+        <th>Acciones</th>
     </tr>
     </thead>
 
     <tbody>
         <?php foreach ($libros as $libro): ?>
         <tr>
-            <td><?= $libro['titulo'] ?></td>
-            <td><?= $libro['autor'] ?></td>
-            <td><?= $libro['editorial'] ?></td>
-            <td><?= $libro['anio_publicacion'] ?></td>
-            <td><?= $libro['stock'] ?></td>
-            <td><?= $libro['nom_categoria'] ?></td>
-
+            <td><?= esc($libro['codigo']) ?></td>
+            <td><?= esc($libro['titulo']) ?></td>
+            <td><?= esc($libro['autor']) ?></td>
+            <td><?= esc($libro['genero']) ?></td>
+            <td><?= esc($libro['paginas']) ?></td>
+            <td><?= esc($libro['numero_ejemplar']) ?></td>
+            <td><?= esc($libro['total_ejemplares']) ?></td>
+            <td><?= esc($libro['nivel']) ?></td>
             <td>
                 <a href="<?= base_url('libros/edit/'.$libro['id']) ?>" class="btn btn-warning btn-sm">Editar</a>
                 <a href="<?= base_url('ejemplares/create/' . $libro['id']) ?>" class="btn btn-info btn-sm">Agregar ejemplar</a>

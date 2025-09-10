@@ -1,14 +1,14 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h2>Agregar ejemplar</h2>
+<h2>Agregar ejemplar a: <?= esc($libro['titulo']) ?> (Código: <?= esc($libro['codigo']) ?>)</h2>
 
 <form action="<?= base_url('ejemplares/store') ?>" method="post">
-    <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
+    <input type="hidden" name="id_libro" value="<?= esc($id_libro) ?>">
 
     <div class="mb-3">
         <label for="estado" class="form-label">Estado</label>
-        <select name="estado" id="estado" class="form-select">
+        <select name="estado" id="estado" class="form-select" required>
             <option value="Disponible">Disponible</option>
             <option value="Prestado">Prestado</option>
             <option value="Reservado">Reservado</option>
@@ -19,6 +19,5 @@
     <button type="submit" class="btn btn-success">Guardar</button>
     <a href="<?= base_url('ejemplares/ver/' . $id_libro) ?>" class="btn btn-secondary">Cancelar</a>
 </form>
-
 
 <?= $this->endSection() ?>

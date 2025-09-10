@@ -3,26 +3,19 @@
 namespace App\Controllers;
 
 use App\Models\LibroModel;
-use App\Models\CategoriaModel;
 
 class Libros extends BaseController
 {
     public function index()
     {
         $model = new LibroModel();
-        $data['libros'] = $model
-    ->select('libros.*, categorias.nom_categoria')
-    ->join('categorias', 'categorias.id = libros.id_categoria')
-    ->findAll();
-
+        $data['libros'] = $model->findAll();
         return view('libros/index', $data);
     }
 
     public function create()
     {
-        $catModel = new CategoriaModel();
-        $data['categorias'] = $catModel->findAll();
-        return view('libros/create', $data);
+        return view('libros/create');
     }
 
     public function store()
@@ -35,9 +28,7 @@ class Libros extends BaseController
     public function edit($id)
     {
         $model = new LibroModel();
-        $catModel = new CategoriaModel();
         $data['libro'] = $model->find($id);
-        $data['categorias'] = $catModel->findAll();
         return view('libros/edit', $data);
     }
 

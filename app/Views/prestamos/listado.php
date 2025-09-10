@@ -1,7 +1,9 @@
 <?php if (session()->getFlashdata('error')): ?>
-    <div class="alert alert-danger">
-        <?= session()->getFlashdata('error') ?>
-    </div>
+    <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+<?php endif ?>
+
+<?php if (session()->getFlashdata('mensaje')): ?>
+    <div class="alert alert-success"><?= session()->getFlashdata('mensaje') ?></div>
 <?php endif ?>
 
 <?= $this->extend('layouts/panel') ?>
@@ -12,11 +14,11 @@
 <a href="<?= base_url('prestamos/nuevo') ?>" class="btn btn-success mb-3">📄 Registrar nuevo préstamo</a>
 
 <?php if (!empty($prestamos)): ?>
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped align-middle">
         <thead class="table-light">
             <tr>
                 <th>Usuario</th>
-                <th>Libro</th>
+                <th>Libro (Ejemplar)</th>
                 <th>Fecha Préstamo</th>
                 <th>Fecha Devolución</th>
                 <th>Estado</th>
@@ -27,10 +29,10 @@
         <tbody>
             <?php foreach ($prestamos as $p): ?>
             <tr>
-                <td><?= htmlspecialchars($p['usuario']) ?></td>
-                <td><?= htmlspecialchars($p['libro'] . ' (' . $p['ejemplar'] . ')') ?></td>
-                <td><?= $p['fecha_prestamo'] ?></td>
-                <td><?= $p['fecha_devolucion'] ?></td>
+                <td><?= esc($p['usuario']) ?></td>
+                <td><?= esc($p['libro']) ?> (<?= esc($p['ejemplar']) ?>)</td>
+                <td><?= date('d/m/Y', strtotime($p['fecha_prestamo'])) ?></td>
+                <td><?= date('d/m/Y', strtotime($p['fecha_devolucion'])) ?></td>
 
                 <!-- Estado -->
                 <td>
@@ -42,6 +44,8 @@
                         <?php else: ?>
                             <span class="badge bg-warning text-dark">Prestado</span>
                         <?php endif ?>
+                    <?php elseif ($p['estado'] === 'Retrasado'): ?>
+                        <span class="badge bg-danger">Retrasado</span>
                     <?php else: ?>
                         <span class="badge bg-secondary">Desconocido</span>
                     <?php endif ?>
@@ -70,9 +74,14 @@
 
                 <!-- Acciones -->
                 <td>
-                    <a href="<?= base_url('prestamos/editar/' . $p['id']) ?>" class="btn btn-sm btn-outline-secondary">
-                        ✏️ Editar
-                    </a>
+                    <a href="<?= base_url('prestamos/editar/' . $p['id']) ?>" class="btn btn-sm btn-outline-secondary">✏️ Editar</a>
+                    <?php if ($p['estado'] === 'Prestado'): ?>
+                        <a href="<?= base_url('prestamos/devolver/' . $p['id']) ?>" 
+                           class="btn btn-sm btn-outline-success"
+                           onclick="return confirm('¿Marcar este préstamo como devuelto?')">
+                            ✅ Devolver
+                        </a>
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php endforeach; ?>

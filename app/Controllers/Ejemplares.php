@@ -11,7 +11,7 @@ class Ejemplares extends BaseController
     {
         $model = new EjemplarModel();
         $data['ejemplares'] = $model
-            ->select('ejemplares.*, libros.titulo')
+            ->select('ejemplares.*, libros.titulo, libros.codigo')
             ->join('libros', 'libros.id = ejemplares.id_libro')
             ->findAll();
 
@@ -29,30 +29,34 @@ class Ejemplares extends BaseController
         return view('ejemplares/create', $data);
     }
 
-
     public function store()
     {
         $model = new EjemplarModel();
-        $libroModel = new \App\Models\LibroModel();
+        $libroModel = new LibroModel();
 
         $id_libro = $this->request->getPost('id_libro');
         $estado = $this->request->getPost('estado');
 
+        // Calcular número de ejemplar
         $count = $model->where('id_libro', $id_libro)->countAllResults();
         $numero = str_pad($count + 1, 2, '0', STR_PAD_LEFT);
         $codigo = 'LIB' . str_pad($id_libro, 3, '0', STR_PAD_LEFT) . '-' . $numero;
 
+        // Guardar ejemplar
         $model->save([
             'id_libro' => $id_libro,
             'codigo_ejemplar' => $codigo,
             'estado' => $estado
         ]);
 
-        // Incrementar stock del libro
-        $libroModel->set('stock', 'stock + 1', false)->where('id', $id_libro)->update();
+        // Incrementar total de ejemplares en la tabla libros
+        $libroModel->set('total_ejemplares', 'total_ejemplares + 1', false)
+                   ->where('id', $id_libro)
+                   ->update();
 
-        return redirect()->to('/ejemplares/ver/' . $id_libro)->with('mensaje', 'Ejemplar creado correctamente');
-        }
+        return redirect()->to('/ejemplares/ver/' . $id_libro)
+                         ->with('mensaje', 'Ejemplar creado correctamente');
+    }
 
     public function ver($idLibro)
     {
@@ -71,17 +75,22 @@ class Ejemplares extends BaseController
     public function delete($id)
     {
         $model = new EjemplarModel();
-        $libroModel = new \App\Models\LibroModel();
+        $libroModel = new LibroModel();
 
         $ejemplar = $model->find($id);
         $id_libro = $ejemplar['id_libro'];
 
+        // Eliminar ejemplar
         $model->delete($id);
 
-        // 🔽 Decrementar stock del libro
-        $libroModel->set('stock', 'stock - 1', false)->where('id', $id_libro)->update();
+        // Decrementar total de ejemplares en la tabla libros
+        $libroModel->set('total_ejemplares', 'total_ejemplares - 1', false)
+                ->where('id', $id_libro)
+                ->update();
 
-        return redirect()->to('/ejemplares?libro=' . $id_libro)->with('mensaje', 'Ejemplar eliminado correctamente');
+        // Redirigir al método ver() para que cargue $libro y $ejemplares
+        return redirect()->to('/ejemplares/ver/' . $id_libro)
+                        ->with('mensaje', 'Ejemplar eliminado correctamente');
     }
 
 }

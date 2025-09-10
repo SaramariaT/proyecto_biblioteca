@@ -5,6 +5,11 @@
 
 <form action="<?= base_url('libros/update/' . $libro['id']) ?>" method="post">
     <div class="mb-3">
+        <label for="codigo" class="form-label">Código</label>
+        <input type="text" name="codigo" id="codigo" class="form-control" value="<?= esc($libro['codigo']) ?>" required>
+    </div>
+
+    <div class="mb-3">
         <label for="titulo" class="form-label">Título</label>
         <input type="text" name="titulo" id="titulo" class="form-control" value="<?= esc($libro['titulo']) ?>" required>
     </div>
@@ -15,34 +20,28 @@
     </div>
 
     <div class="mb-3">
-        <label for="editorial" class="form-label">Editorial</label>
-        <input type="text" name="editorial" id="editorial" class="form-control" value="<?= esc($libro['editorial']) ?>">
+        <label for="genero" class="form-label">Género</label>
+        <input type="text" name="genero" id="genero" class="form-control" value="<?= esc($libro['genero']) ?>">
     </div>
 
     <div class="mb-3">
-        <label for="anio_publicacion" class="form-label">Año de publicación</label>
-        <input type="number" name="anio_publicacion" id="anio_publicacion" class="form-control" value="<?= esc($libro['anio_publicacion']) ?>" min="1000" max="<?= date('Y') ?>">
+        <label for="paginas" class="form-label">Páginas</label>
+        <input type="number" name="paginas" id="paginas" class="form-control" value="<?= esc($libro['paginas']) ?>" min="1">
     </div>
 
     <div class="mb-3">
-        <label for="precio_venta" class="form-label">Precio de venta</label>
-        <input type="number" step="0.01" name="precio_venta" id="precio_venta" class="form-control" value="<?= esc($libro['precio_venta']) ?>">
+        <label for="numero_ejemplar" class="form-label">Número de ejemplar</label>
+        <input type="number" name="numero_ejemplar" id="numero_ejemplar" class="form-control" value="<?= esc($libro['numero_ejemplar']) ?>" min="1">
     </div>
 
     <div class="mb-3">
-        <label for="stock" class="form-label">Stock</label>
-        <input type="number" name="stock" id="stock" class="form-control" value="<?= esc($libro['stock']) ?>" min="0">
+        <label for="total_ejemplares" class="form-label">Total de ejemplares</label>
+        <input type="number" name="total_ejemplares" id="total_ejemplares" class="form-control" value="<?= esc($libro['total_ejemplares']) ?>" min="1">
     </div>
 
     <div class="mb-3">
-        <label for="id_categoria" class="form-label">Categoría</label>
-        <select name="id_categoria" id="id_categoria" class="form-select">
-            <?php foreach ($categorias as $categoria): ?>
-                <option value="<?= $categoria['id'] ?>" <?= $libro['id_categoria'] == $categoria['id'] ? 'selected' : '' ?>>
-                    <?= esc($categoria['nom_categoria']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+        <label for="nivel" class="form-label">Nivel</label>
+        <input type="text" name="nivel" id="nivel" class="form-control" value="<?= esc($libro['nivel']) ?>">
     </div>
 
     <button type="submit" class="btn btn-success">Actualizar</button>
