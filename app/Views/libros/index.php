@@ -3,11 +3,20 @@
 
 <h2>Listado de Libros</h2>
 
+<!-- 📚 Acciones -->
 <div class="mb-3 d-flex gap-2">
     <a href="<?= base_url('libros/create') ?>" class="btn btn-primary">➕ Agregar Libro</a>
     <a href="<?= base_url('reportes/libros_estado_pdf') ?>" class="btn btn-outline-info">📘 Reporte Detallado</a>
 </div>
 
+<!-- 🔍 Buscador debajo de los botones -->
+<form method="get" action="<?= base_url('libros') ?>" class="mb-3 d-flex gap-2">
+    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por título, autor o género" value="<?= esc($busqueda ?? '') ?>">
+    <button type="submit" class="btn btn-success">Buscar</button>
+    <a href="<?= base_url('libros') ?>" class="btn btn-secondary">Limpiar</a>
+</form>
+
+<!-- 📋 Tabla -->
 <table class="table table-bordered">
     <thead>
     <tr>

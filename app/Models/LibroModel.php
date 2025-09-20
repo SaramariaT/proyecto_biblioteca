@@ -38,4 +38,19 @@ class LibroModel extends Model
             ->orderBy('e.codigo_ejemplar', 'ASC')
             ->get()->getResultArray();
     }
+
+    public function buscarLibros($busqueda = null)
+    {
+        $builder = $this->db->table('libros');
+
+        if (!empty($busqueda)) {
+            $builder->groupStart()
+                    ->like('titulo', $busqueda)
+                    ->orLike('autor', $busqueda)
+                    ->orLike('genero', $busqueda)
+                    ->groupEnd();
+        }
+
+        return $builder->get()->getResultArray();
+    }
 }

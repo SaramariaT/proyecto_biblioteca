@@ -9,7 +9,15 @@ class Libros extends BaseController
     public function index()
     {
         $model = new LibroModel();
-        $data['libros'] = $model->findAll();
+        $busqueda = $this->request->getGet('busqueda');
+
+        if (!empty($busqueda)) {
+            $data['libros'] = $model->buscarLibros($busqueda);
+        } else {
+            $data['libros'] = $model->findAll();
+        }
+
+        $data['busqueda'] = $busqueda;
         return view('libros/index', $data);
     }
 
@@ -20,8 +28,15 @@ class Libros extends BaseController
 
     public function store()
     {
+        $datos = $this->request->getPost();
+
+        // Asignar valores por defecto
+        $datos['numero_ejemplar'] = 0;
+        $datos['total_ejemplares'] = 0;
+
         $model = new LibroModel();
-        $model->save($this->request->getPost());
+        $model->save($datos);
+
         return redirect()->to('/libros');
     }
 
