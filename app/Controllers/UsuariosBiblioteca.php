@@ -21,8 +21,22 @@ class UsuariosBiblioteca extends BaseController
     public function store()
     {
         $model = new UsuarioBibliotecaModel();
-        $model->save($this->request->getPost());
-        return redirect()->to('/usuarios-biblioteca')->with('mensaje', 'Usuario creado correctamente');
+        $datos = $this->request->getPost();
+
+        // Guardar en usuarios_biblioteca
+        $model->save($datos);
+
+        // Crear usuario de acceso con contraseña MD5
+        $db = \Config\Database::connect();
+        $usuario = $datos['carne']; // o el campo que uses como login
+        $password = md5('12345'); // encriptado con MD5
+
+        $db->table('usuarios')->insert([
+            'usuario' => $usuario,
+            'password' => $password
+        ]);
+
+        return redirect()->to('/usuarios-biblioteca')->with('mensaje', 'Usuario creado correctamente con acceso a la plataforma');
     }
 
     public function edit($id)
@@ -35,8 +49,27 @@ class UsuariosBiblioteca extends BaseController
     public function update($id)
     {
         $model = new UsuarioBibliotecaModel();
-        $model->update($id, $this->request->getPost());
-        return redirect()->to('/usuarios-biblioteca')->with('mensaje', 'Usuario actualizado');
+        $datos = $this->request->getPost();
+
+        // Actualizar datos del usuario
+        $model->update($id, $datos);
+
+        $mensaje = 'Usuario actualizado correctamente';
+
+        // Si se ingresó una nueva contraseña, actualizarla en la tabla de acceso
+        if (!empty($datos['reset_password'])) {
+            $db = \Config\Database::connect();
+            $usuario = $datos['carne'];
+            $nuevaPassword = md5($datos['reset_password']);
+
+            $db->table('usuarios')
+                ->where('usuario', $usuario)
+                ->update(['password' => $nuevaPassword]);
+
+            $mensaje .= ' y contraseña restablecida';
+        }
+
+        return redirect()->to('/usuarios-biblioteca')->with('mensaje', $mensaje);
     }
 
     public function delete($id)

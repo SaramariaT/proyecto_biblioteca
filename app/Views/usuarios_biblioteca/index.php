@@ -5,7 +5,9 @@
 <a href="<?= base_url('usuarios-biblioteca/create') ?>" class="btn btn-primary mb-3">+ Agregar Usuario</a>
 
 <?php if (session()->getFlashdata('mensaje')): ?>
-    <div class="alert alert-success"><?= session()->getFlashdata('mensaje') ?></div>
+    <div class="alert alert-success">
+        <strong>Éxito:</strong> <?= esc(session()->getFlashdata('mensaje')) ?>
+    </div>
 <?php endif; ?>
 
 <table class="table">

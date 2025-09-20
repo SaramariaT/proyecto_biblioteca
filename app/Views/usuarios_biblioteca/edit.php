@@ -24,6 +24,12 @@
             <option value="Admin" <?= $usuario['rol'] === 'Admin' ? 'selected' : '' ?>>Admin</option>
         </select>
     </div>
+
+    <div class="mb-3">
+        <label>Restablecer contraseña</label>
+        <input type="password" name="reset_password" class="form-control" placeholder="Dejar vacío si no se cambia">
+    </div>
+
     <button type="submit" class="btn btn-success">Actualizar</button>
     <a href="<?= base_url('usuarios-biblioteca') ?>" class="btn btn-secondary">Cancelar</a>
 </form>
