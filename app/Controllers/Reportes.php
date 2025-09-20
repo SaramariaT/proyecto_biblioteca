@@ -18,7 +18,7 @@ class Reportes extends BaseController
     public function libros_pdf()
     {
         $libroModel = new LibroModel();
-        $data['libros'] = $libroModel->obtenerLibrosConCategoria();
+        $data['libros'] = $libroModel->findAll();
 
         $html = view('reportes/libros_pdf', $data);
 
@@ -32,7 +32,7 @@ class Reportes extends BaseController
     public function prestamos_activos_pdf()
     {
         $prestamoModel = new PrestamoModel();
-        $data['prestamos'] = $prestamoModel->obtenerPrestamosActivos();
+        $data['prestamos'] = $prestamoModel->obtenerPrestamosActivos(); // ✅ Método actualizado
 
         $html = view('reportes/prestamos_pdf', $data);
 

@@ -10,7 +10,9 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #000; padding: 6px; }
         th { background-color: #f2f2f2; }
-        .vigente { background-color: #dff0d8; } /* verde claro para préstamos activos */
+        .vigente { background-color: #dff0d8; }
+        .retrasado { background-color: #f8b2b2; }
+        .leyenda { font-size: 11px; margin-top: 15px; text-align: left; color: #555; }
     </style>
 </head>
 <body>
@@ -21,11 +23,14 @@
     <table>
         <thead>
             <tr>
+                <th>Código</th>
                 <th>Título</th>
                 <th>Autor</th>
-                <th>Editorial</th>
-                <th>Año</th>
-                <th>Categoría</th>
+                <th>Género</th>
+                <th>Páginas</th>
+                <th>N° Ejemplar</th>
+                <th>Total Ejemplares</th>
+                <th>Nivel</th>
                 <th>Ejemplar</th>
                 <th>Estado</th>
                 <th>Usuario</th>
@@ -35,20 +40,40 @@
         </thead>
         <tbody>
             <?php foreach ($libros as $libro): ?>
-            <tr class="<?= !empty($libro['nombre_usuario']) ? 'vigente' : '' ?>">
-                <td><?= $libro['titulo'] ?></td>
-                <td><?= $libro['autor'] ?></td>
-                <td><?= $libro['editorial'] ?></td>
-                <td><?= $libro['anio_publicacion'] ?></td>
-                <td><?= $libro['nom_categoria'] ?></td>
-                <td><?= $libro['codigo_ejemplar'] ?></td>
-                <td><?= $libro['estado'] ?></td>
-                <td><?= !empty($libro['nombre_usuario']) ? $libro['nombre_usuario'] : '—' ?></td>
-                <td><?= !empty($libro['fecha_prestamo']) ? date('d/m/Y', strtotime($libro['fecha_prestamo'])) : '—' ?></td>
-                <td><?= !empty($libro['fecha_devolucion']) ? date('d/m/Y', strtotime($libro['fecha_devolucion'])) : '—' ?></td>
-            </tr>
+                <?php
+                    $clase = '';
+                    // Determinar clase y estado
+                    if (isset($libro['retraso']) && intval($libro['retraso']) === 1) {
+                        $clase = 'retrasado';
+                        $estadoTexto = 'Prestado';
+                    } elseif (!empty($libro['nombre_usuario'])) {
+                        $clase = 'vigente';
+                        $estadoTexto = 'Prestado';
+                    } else {
+                        $estadoTexto = 'Disponible';
+                    }
+                ?>
+                <tr class="<?= $clase ?>">
+                    <td><?= $libro['codigo'] ?></td>
+                    <td><?= $libro['titulo'] ?></td>
+                    <td><?= $libro['autor'] ?></td>
+                    <td><?= $libro['genero'] ?></td>
+                    <td><?= $libro['paginas'] ?></td>
+                    <td><?= $libro['numero_ejemplar'] ?></td>
+                    <td><?= $libro['total_ejemplares'] ?></td>
+                    <td><?= $libro['nivel'] ?></td>
+                    <td><?= $libro['codigo_ejemplar'] ?></td>
+                    <td><?= $estadoTexto ?></td>
+                    <td><?= !empty($libro['nombre_usuario']) ? $libro['nombre_usuario'] : '—' ?></td>
+                    <td><?= !empty($libro['fecha_prestamo']) ? date('d/m/Y', strtotime($libro['fecha_prestamo'])) : '—' ?></td>
+                    <td><?= !empty($libro['fecha_devolucion']) ? date('d/m/Y', strtotime($libro['fecha_devolucion'])) : '—' ?></td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <div class="leyenda">
+        <strong>Nota:</strong> Las filas en <span style="color: #a94442;">rojo</span> indican préstamos vencidos.
+    </div>
 </body>
 </html>

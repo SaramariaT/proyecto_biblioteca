@@ -25,11 +25,17 @@ class LibroModel extends Model
                 l.codigo, l.titulo, l.autor, l.genero, l.paginas,
                 l.numero_ejemplar, l.total_ejemplares, l.nivel,
                 e.codigo_ejemplar, e.estado,
-                ub.nombre AS nombre_usuario, p.fecha_prestamo, p.fecha_devolucion
+                ub.nombre AS nombre_usuario,
+                p.fecha_prestamo, p.fecha_devolucion,
+                CASE 
+                    WHEN p.fecha_devolucion < CURDATE() AND p.estado = "Prestado" THEN 1
+                    ELSE 0
+                END AS retraso
             ')
             ->join('ejemplares e', 'e.id_libro = l.id')
-            ->join('prestamos_libros p', 'p.id_ejemplar = e.id AND p.estado = "Prestado"', 'left')
+            ->join('prestamos p', 'p.id_ejemplar = e.id AND p.estado = "Prestado"', 'left')
             ->join('usuarios_biblioteca ub', 'ub.id = p.id_usuario', 'left')
+            ->orderBy('e.codigo_ejemplar', 'ASC')
             ->get()->getResultArray();
     }
 }

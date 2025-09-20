@@ -25,25 +25,23 @@ class PrestamoModel extends Model
      */
     public function crear($id_ejemplar, $id_usuario, $fecha_prestamo = null, $fecha_devolucion = null, $diasPrestamo = 7)
     {
-        // Fecha de préstamo por defecto: hoy
         if (empty($fecha_prestamo)) {
             $fecha_prestamo = date('Y-m-d');
         }
 
-        // Fecha de devolución por defecto: fecha_prestamo + $diasPrestamo días
         if (empty($fecha_devolucion)) {
             $fecha_devolucion = date('Y-m-d', strtotime("+{$diasPrestamo} days", strtotime($fecha_prestamo)));
         }
 
         return $this->insert([
-            'id_ejemplar'        => $id_ejemplar,
-            'id_usuario'         => $id_usuario,
-            'fecha_prestamo'     => $fecha_prestamo,
-            'fecha_devolucion'   => $fecha_devolucion,
-            'estado'             => 'Prestado',
-            'progreso'           => 'en curso',
-            'retraso'            => 0,
-            'fecha_real_devolucion' => null
+            'id_ejemplar'            => $id_ejemplar,
+            'id_usuario'             => $id_usuario,
+            'fecha_prestamo'         => $fecha_prestamo,
+            'fecha_devolucion'       => $fecha_devolucion,
+            'estado'                 => 'Prestado',
+            'progreso'               => 'en curso',
+            'retraso'                => 0,
+            'fecha_real_devolucion'  => null
         ]);
     }
 
@@ -61,6 +59,24 @@ class PrestamoModel extends Model
             ->get()
             ->getResultArray();
     }
+
+    /**
+     * Obtener solo préstamos activos (estado = 'Prestado')
+     */
+    public function obtenerPrestamosActivos()
+    {
+        return $this->db->table($this->table . ' p')
+            ->select('p.*, u.nombre AS usuario, e.codigo_ejemplar AS ejemplar, e.estado AS estado_ejemplar, l.titulo AS libro')
+            ->join('usuarios_biblioteca u', 'p.id_usuario = u.id')
+            ->join('ejemplares e', 'p.id_ejemplar = e.id')
+            ->join('libros l', 'e.id_libro = l.id')
+            ->where('p.estado', 'Prestado')
+            ->where('p.progreso', 'en curso') // 🔒 Asegura que coincida con el CRUD
+            ->orderBy('p.fecha_prestamo', 'DESC')
+            ->get()
+            ->getResultArray();
+    }
+
 
     /**
      * Marcar préstamo como devuelto y calcular retraso automáticamente
@@ -82,7 +98,6 @@ class PrestamoModel extends Model
             'progreso'               => 'completado'
         ]);
 
-        // Devolver datos actualizados
         $prestamo['estado'] = 'Devuelto';
         $prestamo['fecha_real_devolucion'] = $hoy;
         $prestamo['retraso'] = $retraso ? 1 : 0;
