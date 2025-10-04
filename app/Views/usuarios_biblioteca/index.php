@@ -2,14 +2,33 @@
 <?= $this->section('content') ?>
 
 <h2>Usuarios de Biblioteca</h2>
+
+<!-- ➕ Botón de agregar usuario arriba -->
 <a href="<?= base_url('usuarios-biblioteca/create') ?>" class="btn btn-primary mb-3">+ Agregar Usuario</a>
 
+<!-- 🔍 Buscador horizontal con columnas -->
+<form method="get" action="<?= base_url('usuarios-biblioteca') ?>" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-6 col-lg-8">
+            <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre, carné, correo o rol" value="<?= esc($busqueda ?? '') ?>">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-success">Buscar</button>
+        </div>
+        <div class="col-auto">
+            <a href="<?= base_url('usuarios-biblioteca') ?>" class="btn btn-secondary">Limpiar</a>
+        </div>
+    </div>
+</form>
+
+<!-- ✅ Mensaje flash -->
 <?php if (session()->getFlashdata('mensaje')): ?>
     <div class="alert alert-success">
         <strong>Éxito:</strong> <?= esc(session()->getFlashdata('mensaje')) ?>
     </div>
 <?php endif; ?>
 
+<!-- 📋 Tabla de usuarios -->
 <table class="table">
     <thead>
         <tr>

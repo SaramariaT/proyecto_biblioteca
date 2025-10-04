@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\LibroModel;
+use App\Models\PrestamoModel;
 
 class Libros extends BaseController
 {
@@ -18,6 +19,7 @@ class Libros extends BaseController
         }
 
         $data['busqueda'] = $busqueda;
+        $data['mensaje'] = session()->getFlashdata('mensaje');
         return view('libros/index', $data);
     }
 
@@ -33,6 +35,7 @@ class Libros extends BaseController
         $model = new LibroModel();
         $model->save($datos);
 
+        session()->setFlashdata('mensaje', '📚 Libro creado exitosamente.');
         return redirect()->to('/libros');
     }
 
@@ -47,13 +50,23 @@ class Libros extends BaseController
     {
         $model = new LibroModel();
         $model->update($id, $this->request->getPost());
+
+        session()->setFlashdata('mensaje', '✅ Libro actualizado correctamente.');
         return redirect()->to('/libros');
     }
 
     public function delete($id)
     {
-        $model = new LibroModel();
-        $model->delete($id);
+        $libroModel = new LibroModel();
+        $prestamoModel = new PrestamoModel();
+
+        // Eliminar préstamos asociados al libro
+        $prestamoModel->where('id_libro', $id)->delete();
+
+        // Eliminar el libro
+        $libroModel->delete($id);
+
+        session()->setFlashdata('mensaje', '🗑️ Libro y préstamos eliminados correctamente.');
         return redirect()->to('/libros');
     }
 
@@ -61,6 +74,8 @@ class Libros extends BaseController
     {
         $model = new LibroModel();
         $model->actualizarEstado($id, $estado);
+
+        session()->setFlashdata('mensaje', '📌 Estado del libro actualizado.');
         return redirect()->to('/libros');
     }
 }

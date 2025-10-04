@@ -9,7 +9,20 @@ class UsuariosBiblioteca extends BaseController
     public function index()
     {
         $model = new UsuarioBibliotecaModel();
-        $data['usuarios'] = $model->findAll();
+        $busqueda = $this->request->getGet('busqueda');
+
+        if (!empty($busqueda)) {
+            $data['usuarios'] = $model
+                ->like('nombre', $busqueda)
+                ->orLike('carne', $busqueda)
+                ->orLike('correo', $busqueda)
+                ->orLike('rol', $busqueda)
+                ->findAll();
+        } else {
+            $data['usuarios'] = $model->findAll();
+        }
+
+        $data['busqueda'] = $busqueda;
         return view('usuarios_biblioteca/index', $data);
     }
 
@@ -28,8 +41,8 @@ class UsuariosBiblioteca extends BaseController
 
         // Crear usuario de acceso con contraseña MD5
         $db = \Config\Database::connect();
-        $usuario = $datos['carne']; // o el campo que uses como login
-        $password = md5('12345'); // encriptado con MD5
+        $usuario = $datos['carne'];
+        $password = md5('12345');
 
         $db->table('usuarios')->insert([
             'usuario' => $usuario,
@@ -51,12 +64,9 @@ class UsuariosBiblioteca extends BaseController
         $model = new UsuarioBibliotecaModel();
         $datos = $this->request->getPost();
 
-        // Actualizar datos del usuario
         $model->update($id, $datos);
-
         $mensaje = 'Usuario actualizado correctamente';
 
-        // Si se ingresó una nueva contraseña, actualizarla en la tabla de acceso
         if (!empty($datos['reset_password'])) {
             $db = \Config\Database::connect();
             $usuario = $datos['carne'];

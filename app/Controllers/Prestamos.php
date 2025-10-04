@@ -19,7 +19,33 @@ class Prestamos extends Controller
 
     public function index()
     {
-        $data['prestamos'] = $this->modelo->obtenerTodos();
+        $db = \Config\Database::connect();
+        $busqueda = $this->request->getGet('busqueda');
+
+        $sql = "
+            SELECT 
+                p.*, 
+                u.nombre AS usuario, 
+                CONCAT(l.codigo, ' - ', l.numero_ejemplar, ' - ', l.titulo) AS libro 
+            FROM prestamos p
+            JOIN usuarios_biblioteca u ON u.id = p.id_usuario
+            JOIN libros l ON l.id = p.id_libro
+        ";
+
+        if (!empty($busqueda)) {
+            $sql .= " WHERE 
+                u.nombre LIKE '%{$busqueda}%' OR 
+                l.titulo LIKE '%{$busqueda}%' OR 
+                p.estado LIKE '%{$busqueda}%' OR 
+                p.detalle LIKE '%{$busqueda}%'
+            ";
+        }
+
+        $sql .= " ORDER BY p.fecha_prestamo DESC";
+
+        $data['prestamos'] = $db->query($sql)->getResultArray();
+        $data['busqueda'] = $busqueda;
+
         return view('prestamos/listado', $data);
     }
 
@@ -41,13 +67,11 @@ class Prestamos extends Controller
     {
         $idLibro = $this->request->getPost('id_libro');
 
-        // Validar disponibilidad
         $libro = $this->libroModel->find($idLibro);
         if (!$libro || $libro['estado'] !== 'Disponible') {
             return redirect()->back()->with('error', 'El libro no está disponible.');
         }
 
-        // Crear el préstamo
         $this->modelo->crear(
             $idLibro,
             $this->request->getPost('id_usuario'),
@@ -55,7 +79,6 @@ class Prestamos extends Controller
             $this->request->getPost('fecha_devolucion') ?: null
         );
 
-        // Marcar libro como Prestado
         $this->libroModel->update($idLibro, ['estado' => 'Prestado']);
 
         return redirect()->to(base_url('prestamos'))->with('mensaje', 'Préstamo registrado correctamente');
@@ -73,7 +96,7 @@ class Prestamos extends Controller
 
     public function vencidos()
     {
-        $data['prestamos'] = $this->modelo->obtenerPrestamosActivos(); // Podés filtrar vencidos en el modelo si querés
+        $data['prestamos'] = $this->modelo->obtenerPrestamosActivos();
         return view('prestamos/vencidos', $data);
     }
 
@@ -127,7 +150,6 @@ class Prestamos extends Controller
 
         $this->modelo->update($id, $datos);
 
-        // Liberar libro si el préstamo fue devuelto
         if ($estado === 'Devuelto') {
             $this->libroModel->update($datos['id_libro'], ['estado' => 'Disponible']);
         }

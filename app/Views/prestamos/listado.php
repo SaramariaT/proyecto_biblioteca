@@ -13,6 +13,15 @@
 
 <a href="<?= base_url('prestamos/nuevo') ?>" class="btn btn-success mb-3">📄 Registrar nuevo préstamo</a>
 
+<!-- 🔍 Buscador tamaño intermedio -->
+<form method="get" action="<?= base_url('prestamos') ?>" class="mb-4">
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <input type="text" name="busqueda" class="form-control" style="width: 400px;" placeholder="Buscar por usuario, libro, estado o detalle" value="<?= esc($busqueda ?? '') ?>">
+        <button type="submit" class="btn btn-success">Buscar</button>
+        <a href="<?= base_url('prestamos') ?>" class="btn btn-secondary">Limpiar</a>
+    </div>
+</form>
+
 <?php if (!empty($prestamos)): ?>
     <table class="table table-bordered table-striped align-middle">
         <thead class="table-light">
@@ -30,7 +39,7 @@
             <?php foreach ($prestamos as $p): ?>
             <tr>
                 <td><?= esc($p['usuario']) ?></td>
-                <td><?= esc($p['codigo_libro']) ?> - <?= esc($p['libro']) ?></td>
+                <td><?= esc($p['libro']) ?></td>
                 <td><?= date('d/m/Y', strtotime($p['fecha_prestamo'])) ?></td>
                 <td><?= date('d/m/Y', strtotime($p['fecha_devolucion'])) ?></td>
 

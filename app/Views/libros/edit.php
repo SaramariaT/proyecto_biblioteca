@@ -52,8 +52,16 @@
         </select>
     </div>
 
-    <button type="submit" class="btn btn-success">Actualizar</button>
-    <a href="<?= base_url('libros') ?>" class="btn btn-secondary">Cancelar</a>
-</form>
+    <!-- Botones alineados -->
+    <div class="d-flex gap-2 mt-3">
+        <button type="submit" class="btn btn-success">Actualizar</button>
+        <a href="<?= base_url('libros') ?>" class="btn btn-secondary">Cancelar</a>
+    </form>
+
+    <form action="<?= base_url('libros/delete/' . $libro['id']) ?>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este libro? Esta acción no se puede deshacer.');">
+        <?= csrf_field() ?>
+        <button type="submit" class="btn btn-danger">🗑️ Eliminar libro</button>
+    </form>
+</div>
 
 <?= $this->endSection() ?>
