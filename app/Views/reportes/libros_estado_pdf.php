@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>Sistema de Biblioteca</h1>
-    <h2>Reporte Detallado de Libros y Ejemplares</h2>
+    <h2>Reporte Detallado de Libros y Préstamos</h2>
     <div class="fecha">Generado el: <?= date('d/m/Y H:i') ?></div>
 
     <table>
