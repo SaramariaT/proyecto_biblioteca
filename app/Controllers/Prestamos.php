@@ -3,18 +3,18 @@
 namespace App\Controllers;
 
 use App\Models\PrestamoModel;
-use App\Models\EjemplarModel;
+use App\Models\LibroModel;
 use CodeIgniter\Controller;
 
 class Prestamos extends Controller
 {
     protected $modelo;
-    protected $ejemplarModel;
+    protected $libroModel;
 
     public function __construct()
     {
         $this->modelo = new PrestamoModel();
-        $this->ejemplarModel = new EjemplarModel();
+        $this->libroModel = new LibroModel();
     }
 
     public function index()
@@ -27,14 +27,11 @@ class Prestamos extends Controller
     {
         $db = \Config\Database::connect();
         $data['usuarios'] = $db->query("SELECT id, nombre FROM usuarios_biblioteca")->getResultArray();
-        $data['ejemplares'] = $db->query("
-            SELECT e.id, e.codigo_ejemplar, l.titulo 
-            FROM ejemplares e
-            JOIN libros l ON e.id_libro = l.id
-            WHERE e.estado = 'Disponible'
-            ORDER BY 
-                CAST(SUBSTRING(e.codigo_ejemplar, 4, 3) AS UNSIGNED) ASC,
-                CAST(SUBSTRING_INDEX(e.codigo_ejemplar, '-', -1) AS UNSIGNED) ASC
+        $data['libros'] = $db->query("
+            SELECT id, codigo, titulo 
+            FROM libros 
+            WHERE estado = 'Disponible'
+            ORDER BY codigo ASC
         ")->getResultArray();
 
         return view('prestamos/formulario', $data);
@@ -42,24 +39,24 @@ class Prestamos extends Controller
 
     public function guardar()
     {
-        $idEjemplar = $this->request->getPost('id_ejemplar');
+        $idLibro = $this->request->getPost('id_libro');
 
         // Validar disponibilidad
-        $ejemplar = $this->ejemplarModel->find($idEjemplar);
-        if (!$ejemplar || $ejemplar['estado'] !== 'Disponible') {
-            return redirect()->back()->with('error', 'El ejemplar no está disponible.');
+        $libro = $this->libroModel->find($idLibro);
+        if (!$libro || $libro['estado'] !== 'Disponible') {
+            return redirect()->back()->with('error', 'El libro no está disponible.');
         }
 
-        // Crear el préstamo (si no se pasa fecha_devolucion, el modelo la calcula)
+        // Crear el préstamo
         $this->modelo->crear(
-            $idEjemplar,
+            $idLibro,
             $this->request->getPost('id_usuario'),
             $this->request->getPost('fecha_prestamo') ?: null,
             $this->request->getPost('fecha_devolucion') ?: null
         );
 
-        // Marcar ejemplar como Prestado
-        $this->ejemplarModel->update($idEjemplar, ['estado' => 'Prestado']);
+        // Marcar libro como Prestado
+        $this->libroModel->update($idLibro, ['estado' => 'Prestado']);
 
         return redirect()->to(base_url('prestamos'))->with('mensaje', 'Préstamo registrado correctamente');
     }
@@ -68,7 +65,7 @@ class Prestamos extends Controller
     {
         $prestamo = $this->modelo->marcarDevueltoConRetraso($id);
         if ($prestamo) {
-            $this->ejemplarModel->update($prestamo['id_ejemplar'], ['estado' => 'Disponible']);
+            $this->libroModel->update($prestamo['id_libro'], ['estado' => 'Disponible']);
         }
 
         return redirect()->to(base_url('prestamos'))->with('mensaje', 'Préstamo devuelto correctamente');
@@ -76,26 +73,8 @@ class Prestamos extends Controller
 
     public function vencidos()
     {
-        $db = \Config\Database::connect();
-
-        $vencidos = $db->table('prestamos p')
-            ->select("
-                p.*,
-                u.nombre AS usuario,
-                e.codigo_ejemplar AS ejemplar,
-                l.titulo AS libro,
-                DATEDIFF(CURDATE(), p.fecha_devolucion) AS dias_retraso
-            ")
-            ->join('usuarios_biblioteca u', 'p.id_usuario = u.id')
-            ->join('ejemplares e', 'p.id_ejemplar = e.id')
-            ->join('libros l', 'e.id_libro = l.id')
-            ->where('p.estado', 'Prestado')
-            ->where('p.fecha_devolucion <', date('Y-m-d'))
-            ->orderBy('dias_retraso', 'DESC')
-            ->get()
-            ->getResultArray();
-
-        return view('prestamos/vencidos', ['prestamos' => $vencidos]);
+        $data['prestamos'] = $this->modelo->obtenerPrestamosActivos(); // Podés filtrar vencidos en el modelo si querés
+        return view('prestamos/vencidos', $data);
     }
 
     public function editar($id)
@@ -109,14 +88,7 @@ class Prestamos extends Controller
         $db = \Config\Database::connect();
         $data['prestamo'] = $prestamo;
         $data['usuarios'] = $db->query("SELECT id, nombre FROM usuarios_biblioteca")->getResultArray();
-        $data['ejemplares'] = $db->query("
-            SELECT e.id, e.codigo_ejemplar, l.titulo 
-            FROM ejemplares e
-            JOIN libros l ON e.id_libro = l.id
-            ORDER BY 
-                CAST(SUBSTRING(e.codigo_ejemplar, 4, 3) AS UNSIGNED) ASC,
-                CAST(SUBSTRING_INDEX(e.codigo_ejemplar, '-', -1) AS UNSIGNED) ASC
-        ")->getResultArray();
+        $data['libros'] = $db->query("SELECT id, codigo, titulo FROM libros ORDER BY codigo ASC")->getResultArray();
 
         return view('prestamos/formulario_editar', $data);
     }
@@ -131,7 +103,7 @@ class Prestamos extends Controller
         $retraso = false;
         if ($estado === 'Devuelto') {
             if (!$fechaReal) {
-                $fechaReal = date('Y-m-d'); // asigna automáticamente si no se puso
+                $fechaReal = date('Y-m-d');
             }
             if ($fechaReal > $fechaDevolucion) {
                 $retraso = true;
@@ -144,7 +116,7 @@ class Prestamos extends Controller
 
         $datos = [
             'id_usuario' => $this->request->getPost('id_usuario'),
-            'id_ejemplar' => $this->request->getPost('id_ejemplar'),
+            'id_libro' => $this->request->getPost('id_libro'),
             'fecha_prestamo' => $this->request->getPost('fecha_prestamo'),
             'fecha_devolucion' => $fechaDevolucion,
             'fecha_real_devolucion' => $fechaReal ?: null,
@@ -155,9 +127,9 @@ class Prestamos extends Controller
 
         $this->modelo->update($id, $datos);
 
-        // Liberar ejemplar si el préstamo fue devuelto
+        // Liberar libro si el préstamo fue devuelto
         if ($estado === 'Devuelto') {
-            $this->ejemplarModel->update($datos['id_ejemplar'], ['estado' => 'Disponible']);
+            $this->libroModel->update($datos['id_libro'], ['estado' => 'Disponible']);
         }
 
         return redirect()->to(base_url('prestamos'))->with('mensaje', 'Préstamo actualizado correctamente');

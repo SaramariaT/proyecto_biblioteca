@@ -18,7 +18,7 @@
         <thead class="table-light">
             <tr>
                 <th>Usuario</th>
-                <th>Libro (Ejemplar)</th>
+                <th>Libro</th>
                 <th>Fecha Préstamo</th>
                 <th>Fecha Devolución</th>
                 <th>Estado</th>
@@ -30,7 +30,7 @@
             <?php foreach ($prestamos as $p): ?>
             <tr>
                 <td><?= esc($p['usuario']) ?></td>
-                <td><?= esc($p['libro']) ?> (<?= esc($p['ejemplar']) ?>)</td>
+                <td><?= esc($p['codigo_libro']) ?> - <?= esc($p['libro']) ?></td>
                 <td><?= date('d/m/Y', strtotime($p['fecha_prestamo'])) ?></td>
                 <td><?= date('d/m/Y', strtotime($p['fecha_devolucion'])) ?></td>
 

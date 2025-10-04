@@ -14,7 +14,7 @@ class Libros extends BaseController
         if (!empty($busqueda)) {
             $data['libros'] = $model->buscarLibros($busqueda);
         } else {
-            $data['libros'] = $model->findAll();
+            $data['libros'] = $model->obtenerLibrosConEstado();
         }
 
         $data['busqueda'] = $busqueda;
@@ -29,10 +29,6 @@ class Libros extends BaseController
     public function store()
     {
         $datos = $this->request->getPost();
-
-        // Asignar valores por defecto
-        $datos['numero_ejemplar'] = 0;
-        $datos['total_ejemplares'] = 0;
 
         $model = new LibroModel();
         $model->save($datos);
@@ -58,6 +54,13 @@ class Libros extends BaseController
     {
         $model = new LibroModel();
         $model->delete($id);
+        return redirect()->to('/libros');
+    }
+
+    public function cambiarEstado($id, $estado)
+    {
+        $model = new LibroModel();
+        $model->actualizarEstado($id, $estado);
         return redirect()->to('/libros');
     }
 }

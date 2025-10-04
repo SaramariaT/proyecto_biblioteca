@@ -3,20 +3,20 @@
 
 <h2>Listado de Libros</h2>
 
-<!-- 📚 Acciones -->
+<!-- Acciones -->
 <div class="mb-3 d-flex gap-2">
     <a href="<?= base_url('libros/create') ?>" class="btn btn-primary">➕ Agregar Libro</a>
     <a href="<?= base_url('reportes/libros_estado_pdf') ?>" class="btn btn-outline-info">📘 Reporte Detallado</a>
 </div>
 
-<!-- 🔍 Buscador debajo de los botones -->
+<!-- Buscador debajo de los botones -->
 <form method="get" action="<?= base_url('libros') ?>" class="mb-3 d-flex gap-2">
     <input type="text" name="busqueda" class="form-control" placeholder="Buscar por título, autor o género" value="<?= esc($busqueda ?? '') ?>">
     <button type="submit" class="btn btn-success">Buscar</button>
     <a href="<?= base_url('libros') ?>" class="btn btn-secondary">Limpiar</a>
 </form>
 
-<!-- 📋 Tabla -->
+<!-- Tabla -->
 <table class="table table-bordered">
     <thead>
     <tr>
@@ -28,7 +28,8 @@
         <th>N° Ejemplar</th>
         <th>Total Ejemplares</th>
         <th>Nivel</th>
-        <th>Acciones</th>
+        <th>Estado</th> 
+        <th>Editar</th> 
     </tr>
     </thead>
 
@@ -44,9 +45,12 @@
             <td><?= esc($libro['total_ejemplares']) ?></td>
             <td><?= esc($libro['nivel']) ?></td>
             <td>
+                <span class="badge <?= $libro['estado'] === 'Disponible' ? 'bg-success' : 'bg-danger' ?>">
+                    <?= esc($libro['estado']) ?>
+                </span>
+            </td>
+            <td>
                 <a href="<?= base_url('libros/edit/'.$libro['id']) ?>" class="btn btn-warning btn-sm">Editar</a>
-                <a href="<?= base_url('ejemplares/create/' . $libro['id']) ?>" class="btn btn-info btn-sm">Agregar ejemplar</a>
-                <a href="<?= base_url('ejemplares/ver/' . $libro['id']) ?>" class="btn btn-info">Ver ejemplares</a>
             </td>
         </tr>
         <?php endforeach; ?>

@@ -20,13 +20,6 @@ $routes->get('libros/edit/(:num)', 'Libros::edit/$1');
 $routes->post('libros/update/(:num)', 'Libros::update/$1');
 $routes->get('libros/delete/(:num)', 'Libros::delete/$1');
 
-$routes->get('ejemplares', 'Ejemplares::index');
-$routes->get('ejemplares/create/(:num)', 'Ejemplares::create/$1');
-$routes->post('ejemplares/store', 'Ejemplares::store');
-$routes->get('ejemplares/delete/(:num)', 'Ejemplares::delete/$1');
-
-$routes->get('ejemplares/ver/(:num)', 'Ejemplares::ver/$1');
-
 $routes->get('usuarios-biblioteca', 'UsuariosBiblioteca::index');
 $routes->get('usuarios-biblioteca/create', 'UsuariosBiblioteca::create');
 $routes->post('usuarios-biblioteca/store', 'UsuariosBiblioteca::store');

@@ -29,9 +29,27 @@
         <input type="number" name="paginas" class="form-control" min="1">
     </div>
 
+    <div class="col-md-4">
+        <label for="numero_ejemplar" class="form-label">Nº Ejemplar</label>
+        <input type="number" name="numero_ejemplar" class="form-control" min="1" required>
+    </div>
+
+    <div class="col-md-4">
+        <label for="total_ejemplares" class="form-label">Total Ejemplares</label>
+        <input type="number" name="total_ejemplares" class="form-control" min="1" required>
+    </div>
+
     <div class="col-md-6">
         <label for="nivel" class="form-label">Nivel</label>
         <input type="text" name="nivel" class="form-control">
+    </div>
+
+    <div class="col-md-6">
+        <label for="estado" class="form-label">Estado</label>
+        <select name="estado" class="form-select" required>
+            <option value="Disponible">Disponible</option>
+            <option value="Prestado">Prestado</option>
+        </select>
     </div>
 
     <div class="col-12">

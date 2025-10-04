@@ -9,7 +9,7 @@ class PrestamoModel extends Model
     protected $table = 'prestamos';
     protected $primaryKey = 'id';
     protected $allowedFields = [
-        'id_ejemplar',
+        'id_libro',
         'id_usuario',
         'fecha_prestamo',
         'fecha_devolucion',
@@ -20,10 +20,9 @@ class PrestamoModel extends Model
     ];
 
     /**
-     * Crear préstamo
-     * Si no se pasa fecha_devolucion, se calcula automáticamente sumando $diasPrestamo días
+     * Crear préstamo usando ID del libro
      */
-    public function crear($id_ejemplar, $id_usuario, $fecha_prestamo = null, $fecha_devolucion = null, $diasPrestamo = 7)
+    public function crear($id_libro, $id_usuario, $fecha_prestamo = null, $fecha_devolucion = null, $diasPrestamo = 7)
     {
         if (empty($fecha_prestamo)) {
             $fecha_prestamo = date('Y-m-d');
@@ -34,7 +33,7 @@ class PrestamoModel extends Model
         }
 
         return $this->insert([
-            'id_ejemplar'            => $id_ejemplar,
+            'id_libro'               => $id_libro,
             'id_usuario'             => $id_usuario,
             'fecha_prestamo'         => $fecha_prestamo,
             'fecha_devolucion'       => $fecha_devolucion,
@@ -46,40 +45,37 @@ class PrestamoModel extends Model
     }
 
     /**
-     * Obtener todos los préstamos con JOIN a usuarios, ejemplares y libros
+     * Obtener todos los préstamos con JOIN a usuarios y libros
      */
     public function obtenerTodos()
     {
         return $this->db->table($this->table . ' p')
-            ->select('p.*, u.nombre AS usuario, e.codigo_ejemplar AS ejemplar, e.estado AS estado_ejemplar, l.titulo AS libro')
+            ->select('p.*, u.nombre AS usuario, l.codigo AS codigo_libro, l.titulo AS libro')
             ->join('usuarios_biblioteca u', 'p.id_usuario = u.id')
-            ->join('ejemplares e', 'p.id_ejemplar = e.id')
-            ->join('libros l', 'e.id_libro = l.id')
+            ->join('libros l', 'p.id_libro = l.id')
             ->orderBy('p.fecha_prestamo', 'DESC')
             ->get()
             ->getResultArray();
     }
 
     /**
-     * Obtener solo préstamos activos (estado = 'Prestado')
+     * Obtener préstamos activos
      */
     public function obtenerPrestamosActivos()
     {
         return $this->db->table($this->table . ' p')
-            ->select('p.*, u.nombre AS usuario, e.codigo_ejemplar AS ejemplar, e.estado AS estado_ejemplar, l.titulo AS libro')
+            ->select('p.*, u.nombre AS usuario, l.codigo AS codigo_libro, l.titulo AS libro')
             ->join('usuarios_biblioteca u', 'p.id_usuario = u.id')
-            ->join('ejemplares e', 'p.id_ejemplar = e.id')
-            ->join('libros l', 'e.id_libro = l.id')
+            ->join('libros l', 'p.id_libro = l.id')
             ->where('p.estado', 'Prestado')
-            ->where('p.progreso', 'en curso') // 🔒 Asegura que coincida con el CRUD
+            ->where('p.progreso', 'en curso')
             ->orderBy('p.fecha_prestamo', 'DESC')
             ->get()
             ->getResultArray();
     }
 
-
     /**
-     * Marcar préstamo como devuelto y calcular retraso automáticamente
+     * Marcar préstamo como devuelto
      */
     public function marcarDevueltoConRetraso($id)
     {
@@ -104,5 +100,20 @@ class PrestamoModel extends Model
         $prestamo['progreso'] = 'completado';
 
         return $prestamo;
+    }
+
+    /**
+     * Obtener préstamos por código de libro
+     */
+    public function obtenerPorCodigoLibro($codigo)
+    {
+        return $this->db->table($this->table . ' p')
+            ->select('p.*, u.nombre AS usuario, l.codigo AS codigo_libro, l.titulo AS libro')
+            ->join('usuarios_biblioteca u', 'p.id_usuario = u.id')
+            ->join('libros l', 'p.id_libro = l.id')
+            ->where('l.codigo', $codigo)
+            ->orderBy('p.fecha_prestamo', 'DESC')
+            ->get()
+            ->getResultArray();
     }
 }

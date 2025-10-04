@@ -4,7 +4,6 @@
 <h2 class="mb-4">Registrar Préstamo de Libros</h2>
 
 <?php
-    // Calcular fecha de devolución por defecto (7 días después de hoy)
     $fechaPrestamoDefault = date('Y-m-d');
     $fechaDevolucionDefault = date('Y-m-d', strtotime('+7 days'));
 ?>
@@ -25,19 +24,19 @@
         <?php endif; ?>
     </div>
 
-    <!-- Ejemplar -->
+    <!-- Libro -->
     <div class="col-md-6">
-        <label for="id_ejemplar" class="form-label">Ejemplar:</label>
-        <?php if (!empty($ejemplares)): ?>
-            <select name="id_ejemplar" id="id_ejemplar" class="form-select" required>
-                <?php foreach ($ejemplares as $e): ?>
-                    <option value="<?= esc($e['id']) ?>">
-                        <?= esc($e['codigo_ejemplar']) ?> - <?= esc($e['titulo']) ?>
+        <label for="id_libro" class="form-label">Libro:</label>
+        <?php if (!empty($libros)): ?>
+            <select name="id_libro" id="id_libro" class="form-select" required>
+                <?php foreach ($libros as $libro): ?>
+                    <option value="<?= esc($libro['id']) ?>">
+                        <?= esc($libro['codigo']) ?> - <?= esc($libro['titulo']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         <?php else: ?>
-            <div class="alert alert-warning">⚠️ No hay ejemplares disponibles para préstamo.</div>
+            <div class="alert alert-warning">⚠️ No hay libros disponibles para préstamo.</div>
         <?php endif; ?>
     </div>
 
@@ -67,12 +66,10 @@
 </form>
 
 <script>
-    // Ajustar fecha mínima y sugerida de devolución al cambiar la fecha de préstamo
     document.getElementById('fecha_prestamo').addEventListener('change', function() {
         const fechaPrestamo = this.value;
         const fechaDevolucionInput = document.getElementById('fecha_devolucion');
 
-        // Calcular fecha de devolución por defecto (7 días después)
         const fecha = new Date(fechaPrestamo);
         fecha.setDate(fecha.getDate() + 7);
         const fechaFormateada = fecha.toISOString().split('T')[0];

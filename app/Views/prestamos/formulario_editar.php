@@ -17,13 +17,13 @@
         </select>
     </div>
 
-    <!-- Ejemplar -->
+    <!-- Libro -->
     <div class="mb-3">
-        <label for="id_ejemplar" class="form-label">Ejemplar</label>
-        <select name="id_ejemplar" id="id_ejemplar" class="form-select" required>
-            <?php foreach ($ejemplares as $e): ?>
-                <option value="<?= esc($e['id']) ?>" <?= $e['id'] == $prestamo['id_ejemplar'] ? 'selected' : '' ?>>
-                    <?= esc($e['titulo']) ?> (<?= esc($e['codigo_ejemplar']) ?>)
+        <label for="id_libro" class="form-label">Libro</label>
+        <select name="id_libro" id="id_libro" class="form-select" required>
+            <?php foreach ($libros as $libro): ?>
+                <option value="<?= esc($libro['id']) ?>" <?= $libro['id'] == $prestamo['id_libro'] ? 'selected' : '' ?>>
+                    <?= esc($libro['codigo']) ?> - <?= esc($libro['titulo']) ?>
                 </option>
             <?php endforeach ?>
         </select>

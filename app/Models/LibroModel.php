@@ -10,35 +10,26 @@ class LibroModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = [
         'codigo', 'titulo', 'autor', 'genero',
-        'paginas', 'numero_ejemplar', 'total_ejemplares', 'nivel'
+        'paginas', 'numero_ejemplar', 'total_ejemplares',
+        'nivel', 'estado'
     ];
 
+    // Obtener todos los libros
     public function obtenerLibros()
     {
         return $this->findAll();
     }
 
-    public function obtenerLibrosConEstadoYPrestamo()
+    // Obtener libros con su estado actual (incluye ID para usar en vistas)
+    public function obtenerLibrosConEstado()
     {
-        return $this->db->table('libros l')
-            ->select('
-                l.codigo, l.titulo, l.autor, l.genero, l.paginas,
-                l.numero_ejemplar, l.total_ejemplares, l.nivel,
-                e.codigo_ejemplar, e.estado,
-                ub.nombre AS nombre_usuario,
-                p.fecha_prestamo, p.fecha_devolucion,
-                CASE 
-                    WHEN p.fecha_devolucion < CURDATE() AND p.estado = "Prestado" THEN 1
-                    ELSE 0
-                END AS retraso
-            ')
-            ->join('ejemplares e', 'e.id_libro = l.id')
-            ->join('prestamos p', 'p.id_ejemplar = e.id AND p.estado = "Prestado"', 'left')
-            ->join('usuarios_biblioteca ub', 'ub.id = p.id_usuario', 'left')
-            ->orderBy('e.codigo_ejemplar', 'ASC')
+        return $this->db->table('libros')
+            ->select('id, codigo, titulo, autor, genero, paginas, numero_ejemplar, total_ejemplares, nivel, estado')
+            ->orderBy('codigo', 'ASC')
             ->get()->getResultArray();
     }
 
+    // Buscar libros por título, autor o género
     public function buscarLibros($busqueda = null)
     {
         $builder = $this->db->table('libros');
@@ -52,5 +43,11 @@ class LibroModel extends Model
         }
 
         return $builder->get()->getResultArray();
+    }
+
+    // Actualizar el estado del libro (Prestado / Disponible)
+    public function actualizarEstado($idLibro, $nuevoEstado)
+    {
+        return $this->update($idLibro, ['estado' => $nuevoEstado]);
     }
 }

@@ -44,6 +44,14 @@
         <input type="text" name="nivel" id="nivel" class="form-control" value="<?= esc($libro['nivel']) ?>">
     </div>
 
+    <div class="mb-3">
+        <label for="estado" class="form-label">Estado</label>
+        <select name="estado" id="estado" class="form-select" required>
+            <option value="Disponible" <?= $libro['estado'] === 'Disponible' ? 'selected' : '' ?>>Disponible</option>
+            <option value="Prestado" <?= $libro['estado'] === 'Prestado' ? 'selected' : '' ?>>Prestado</option>
+        </select>
+    </div>
+
     <button type="submit" class="btn btn-success">Actualizar</button>
     <a href="<?= base_url('libros') ?>" class="btn btn-secondary">Cancelar</a>
 </form>
