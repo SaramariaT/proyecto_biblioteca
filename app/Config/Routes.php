@@ -19,6 +19,8 @@ $routes->post('libros/store', 'Libros::store');
 $routes->get('libros/edit/(:num)', 'Libros::edit/$1');
 $routes->post('libros/update/(:num)', 'Libros::update/$1');
 $routes->get('libros/delete/(:num)', 'Libros::delete/$1');
+$routes->post('libros/delete/(:num)', 'Libros::delete/$1');
+
 
 $routes->get('usuarios-biblioteca', 'UsuariosBiblioteca::index');
 $routes->get('usuarios-biblioteca/create', 'UsuariosBiblioteca::create');
