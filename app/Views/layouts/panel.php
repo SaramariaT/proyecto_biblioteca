@@ -36,7 +36,8 @@
 
             <!-- Contenido principal -->
             <main class="col-md-10 py-4">
-                <h2>Bienvenido <?= session('usuario') ?></h2>
+               <h2>Bienvenido, <?= esc(session()->get('nombre_usuario')) ?></h2>
+
                 <?= $this->renderSection('content') ?>
             </main>
         </div>
