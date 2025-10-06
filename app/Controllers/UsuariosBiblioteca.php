@@ -84,8 +84,24 @@ class UsuariosBiblioteca extends BaseController
 
     public function delete($id)
     {
-        $model = new UsuarioBibliotecaModel();
-        $model->delete($id);
-        return redirect()->to('/usuarios-biblioteca')->with('mensaje', 'Usuario eliminado');
+        $perfilModel = new UsuarioBibliotecaModel();
+        $db = \Config\Database::connect();
+
+        // Obtener el perfil antes de eliminar
+        $perfil = $perfilModel->find($id);
+
+        if ($perfil) {
+            $carne = $perfil['carne'];
+
+            // Eliminar de usuarios_biblioteca
+            $perfilModel->delete($id);
+
+            // Eliminar de usuarios (login)
+            $db->table('usuarios')->where('usuario', $carne)->delete();
+
+            return redirect()->to('/usuarios-biblioteca')->with('mensaje', 'Usuario eliminado correctamente');
+        }
+
+        return redirect()->to('/usuarios-biblioteca')->with('mensaje', 'Usuario no encontrado');
     }
 }
