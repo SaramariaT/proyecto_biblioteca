@@ -4,7 +4,9 @@
 <h2>Usuarios de Biblioteca</h2>
 
 <!-- ➕ Botón de agregar usuario arriba -->
-<a href="<?= base_url('usuarios-biblioteca/create') ?>" class="btn btn-primary mb-3">+ Agregar Usuario</a>
+<?php if (tienePermiso('crear', 'usuarios')): ?>
+    <a href="<?= base_url('usuarios-biblioteca/create') ?>" class="btn btn-primary mb-3">+ Agregar Usuario</a>
+<?php endif; ?>
 
 <!-- 🔍 Buscador horizontal con columnas -->
 <form method="get" action="<?= base_url('usuarios-biblioteca') ?>" class="mb-3">
@@ -35,8 +37,15 @@
             <th>Nombre</th>
             <th>Carné</th>
             <th>Correo</th>
-            <th>Rol</th>
-            <th>Acciones</th>
+            <?php if (session()->get('rol_usuario') !== 'Bibliotecario'): ?>
+                <th>Rol</th>
+            <?php endif; ?>
+            <?php if (tienePermiso('ver_contraseña', 'usuarios')): ?>
+                <th>Contraseña</th>
+            <?php endif; ?>
+            <?php if (tienePermiso('editar', 'usuarios') || tienePermiso('eliminar', 'usuarios')): ?>
+                <th>Acciones</th>
+            <?php endif; ?>
         </tr>
     </thead>
     <tbody>
@@ -45,11 +54,22 @@
             <td><?= esc($u['nombre']) ?></td>
             <td><?= esc($u['carne']) ?></td>
             <td><?= esc($u['correo']) ?></td>
-            <td><?= esc($u['rol']) ?></td>
-            <td>
-                <a href="<?= base_url('usuarios-biblioteca/edit/' . $u['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
-                <a href="<?= base_url('usuarios-biblioteca/delete/' . $u['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este usuario?')">Eliminar</a>
-            </td>
+            <?php if (session()->get('rol_usuario') !== 'Bibliotecario'): ?>
+                <td><?= esc($u['rol']) ?></td>
+            <?php endif; ?>
+            <?php if (tienePermiso('ver_contraseña', 'usuarios')): ?>
+                <td><?= esc($u['password'] ?? '••••••') ?></td>
+            <?php endif; ?>
+            <?php if (tienePermiso('editar', 'usuarios') || tienePermiso('eliminar', 'usuarios')): ?>
+                <td>
+                    <?php if (tienePermiso('editar', 'usuarios')): ?>
+                        <a href="<?= base_url('usuarios-biblioteca/edit/' . $u['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
+                    <?php endif; ?>
+                    <?php if (tienePermiso('eliminar', 'usuarios')): ?>
+                        <a href="<?= base_url('usuarios-biblioteca/delete/' . $u['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este usuario?')">Eliminar</a>
+                    <?php endif; ?>
+                </td>
+            <?php endif; ?>
         </tr>
         <?php endforeach; ?>
     </tbody>

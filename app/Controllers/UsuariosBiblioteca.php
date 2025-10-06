@@ -8,6 +8,10 @@ class UsuariosBiblioteca extends BaseController
 {
     public function index()
     {
+        if (!tienePermiso('ver', 'usuarios')) {
+            return redirect()->to('/panel')->with('error', 'No tienes permiso para ver usuarios.');
+        }
+
         $model = new UsuarioBibliotecaModel();
         $busqueda = $this->request->getGet('busqueda');
 
@@ -28,18 +32,24 @@ class UsuariosBiblioteca extends BaseController
 
     public function create()
     {
+        if (!tienePermiso('crear', 'usuarios')) {
+            return redirect()->to('/usuarios-biblioteca')->with('error', 'No tienes permiso para agregar usuarios.');
+        }
+
         return view('usuarios_biblioteca/create');
     }
 
     public function store()
     {
+        if (!tienePermiso('crear', 'usuarios')) {
+            return redirect()->to('/usuarios-biblioteca')->with('error', 'No tienes permiso para guardar usuarios.');
+        }
+
         $model = new UsuarioBibliotecaModel();
         $datos = $this->request->getPost();
 
-        // Guardar en usuarios_biblioteca
         $model->save($datos);
 
-        // Crear usuario de acceso con contraseña MD5
         $db = \Config\Database::connect();
         $usuario = $datos['carne'];
         $password = md5('12345');
@@ -54,6 +64,10 @@ class UsuariosBiblioteca extends BaseController
 
     public function edit($id)
     {
+        if (!tienePermiso('editar', 'usuarios')) {
+            return redirect()->to('/usuarios-biblioteca')->with('error', 'No tienes permiso para editar usuarios.');
+        }
+
         $model = new UsuarioBibliotecaModel();
         $data['usuario'] = $model->find($id);
         return view('usuarios_biblioteca/edit', $data);
@@ -61,6 +75,10 @@ class UsuariosBiblioteca extends BaseController
 
     public function update($id)
     {
+        if (!tienePermiso('editar', 'usuarios')) {
+            return redirect()->to('/usuarios-biblioteca')->with('error', 'No tienes permiso para actualizar usuarios.');
+        }
+
         $model = new UsuarioBibliotecaModel();
         $datos = $this->request->getPost();
 
@@ -84,19 +102,19 @@ class UsuariosBiblioteca extends BaseController
 
     public function delete($id)
     {
+        if (!tienePermiso('eliminar', 'usuarios')) {
+            return redirect()->to('/usuarios-biblioteca')->with('error', 'No tienes permiso para eliminar usuarios.');
+        }
+
         $perfilModel = new UsuarioBibliotecaModel();
         $db = \Config\Database::connect();
 
-        // Obtener el perfil antes de eliminar
         $perfil = $perfilModel->find($id);
 
         if ($perfil) {
             $carne = $perfil['carne'];
 
-            // Eliminar de usuarios_biblioteca
             $perfilModel->delete($id);
-
-            // Eliminar de usuarios (login)
             $db->table('usuarios')->where('usuario', $carne)->delete();
 
             return redirect()->to('/usuarios-biblioteca')->with('mensaje', 'Usuario eliminado correctamente');

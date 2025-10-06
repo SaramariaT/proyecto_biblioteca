@@ -11,10 +11,12 @@
 <?php endif; ?>
 
 <!-- 📚 Acciones -->
+<?php if (tienePermiso('crear', 'libros')): ?>
 <div class="mb-3 d-flex gap-2">
     <a href="<?= base_url('libros/create') ?>" class="btn btn-primary">➕ Agregar Libro</a>
     <a href="<?= base_url('reportes/libros_estado_pdf') ?>" class="btn btn-outline-info">📘 Reporte Detallado</a>
 </div>
+<?php endif; ?>
 
 <!-- 🔍 Buscador debajo de los botones -->
 <form method="get" action="<?= base_url('libros') ?>" class="mb-3 d-flex gap-2">
@@ -36,7 +38,9 @@
         <th>Total Ejemplares</th>
         <th>Nivel</th>
         <th>Estado</th>
-        <th>Editar</th>
+        <?php if (tienePermiso('editar', 'libros')): ?>
+            <th>Editar</th>
+        <?php endif; ?>
     </tr>
     </thead>
 
@@ -56,9 +60,11 @@
                     <?= esc($libro['estado']) ?>
                 </span>
             </td>
+            <?php if (tienePermiso('editar', 'libros')): ?>
             <td>
                 <a href="<?= base_url('libros/edit/'.$libro['id']) ?>" class="btn btn-warning btn-sm">Editar</a>
             </td>
+            <?php endif; ?>
         </tr>
         <?php endforeach; ?>
     </tbody>

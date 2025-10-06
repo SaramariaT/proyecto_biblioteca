@@ -11,16 +11,20 @@
 
 <h2 class="mb-4">Listado de Préstamos de Libros</h2>
 
-<a href="<?= base_url('prestamos/nuevo') ?>" class="btn btn-success mb-3">📄 Registrar nuevo préstamo</a>
+<?php if (tienePermiso('crear', 'prestamos')): ?>
+    <a href="<?= base_url('prestamos/nuevo') ?>" class="btn btn-success mb-3">📄 Registrar nuevo préstamo</a>
+<?php endif; ?>
 
-<!-- 🔍 Buscador tamaño intermedio -->
-<form method="get" action="<?= base_url('prestamos') ?>" class="mb-4">
-    <div class="d-flex flex-wrap gap-2 align-items-center">
-        <input type="text" name="busqueda" class="form-control" style="width: 400px;" placeholder="Buscar por usuario, libro, estado o detalle" value="<?= esc($busqueda ?? '') ?>">
-        <button type="submit" class="btn btn-success">Buscar</button>
-        <a href="<?= base_url('prestamos') ?>" class="btn btn-secondary">Limpiar</a>
-    </div>
-</form>
+<?php if (session()->get('rol_usuario') !== 'Alumno'): ?>
+    <!-- 🔍 Buscador tamaño intermedio -->
+    <form method="get" action="<?= base_url('prestamos') ?>" class="mb-4">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <input type="text" name="busqueda" class="form-control" style="width: 400px;" placeholder="Buscar por usuario, libro, estado o detalle" value="<?= esc($busqueda ?? '') ?>">
+            <button type="submit" class="btn btn-success">Buscar</button>
+            <a href="<?= base_url('prestamos') ?>" class="btn btn-secondary">Limpiar</a>
+        </div>
+    </form>
+<?php endif; ?>
 
 <?php if (!empty($prestamos)): ?>
     <table class="table table-bordered table-striped align-middle">
@@ -32,7 +36,9 @@
                 <th>Fecha Devolución</th>
                 <th>Estado</th>
                 <th>Detalle</th>
-                <th>Acciones</th>
+                <?php if (session()->get('rol_usuario') !== 'Alumno'): ?>
+                    <th>Acciones</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -81,23 +87,28 @@
                     <?php endif ?>
                 </td>
 
-                <!-- Acciones -->
-                <td>
-                    <a href="<?= base_url('prestamos/editar/' . $p['id']) ?>" class="btn btn-sm btn-outline-secondary">✏️ Editar</a>
-                    <?php if ($p['estado'] === 'Prestado'): ?>
-                        <a href="<?= base_url('prestamos/devolver/' . $p['id']) ?>" 
-                           class="btn btn-sm btn-outline-success"
-                           onclick="return confirm('¿Marcar este préstamo como devuelto?')">
-                            ✅ Devolver
-                        </a>
-                    <?php endif; ?>
-                </td>
+                <?php if (session()->get('rol_usuario') !== 'Alumno'): ?>
+                    <td>
+                        <a href="<?= base_url('prestamos/editar/' . $p['id']) ?>" class="btn btn-sm btn-outline-secondary">✏️ Editar</a>
+                        <?php if ($p['estado'] === 'Prestado'): ?>
+                            <a href="<?= base_url('prestamos/devolver/' . $p['id']) ?>" 
+                               class="btn btn-sm btn-outline-success"
+                               onclick="return confirm('¿Marcar este préstamo como devuelto?')">
+                                ✅ Devolver
+                            </a>
+                        <?php endif; ?>
+                    </td>
+                <?php endif; ?>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 <?php else: ?>
-    <div class="alert alert-info">No hay préstamos registrados.</div>
+    <?php if (session()->get('rol_usuario') === 'Alumno'): ?>
+        <div class="alert alert-info">No tienes préstamos registrados en el sistema.</div>
+    <?php else: ?>
+        <div class="alert alert-info">No hay préstamos registrados.</div>
+    <?php endif; ?>
 <?php endif; ?>
 
 <?= $this->endSection() ?>

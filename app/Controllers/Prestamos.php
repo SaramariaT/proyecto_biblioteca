@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\PrestamoModel;
 use App\Models\LibroModel;
+use App\Models\UsuarioBibliotecaModel;
 use CodeIgniter\Controller;
 
 class Prestamos extends Controller
@@ -19,8 +20,37 @@ class Prestamos extends Controller
 
     public function index()
     {
+        if (!tienePermiso('ver', 'prestamos') && !tienePermiso('ver_historial', 'prestamos')) {
+            return redirect()->to('/panel')->with('error', 'No tienes permiso para ver préstamos.');
+        }
+
         $db = \Config\Database::connect();
         $busqueda = $this->request->getGet('busqueda');
+        $rol = session()->get('rol_usuario');
+        $carne = session()->get('usuario');
+
+        $condiciones = [];
+
+        // Si es alumno, filtrar por su id_usuario
+        if ($rol === 'Alumno') {
+            $perfilModel = new UsuarioBibliotecaModel();
+            $perfil = $perfilModel->where('carne', $carne)->first();
+
+            if ($perfil) {
+                $idUsuario = $perfil['id'];
+                $condiciones[] = "p.id_usuario = {$idUsuario}";
+            } else {
+                $condiciones[] = "1 = 0"; // sin perfil, no mostrar nada
+            }
+        }
+
+        // Si hay búsqueda, agregar condiciones
+        if (!empty($busqueda)) {
+            $condiciones[] = "(u.nombre LIKE '%{$busqueda}%' OR 
+                              l.titulo LIKE '%{$busqueda}%' OR 
+                              p.estado LIKE '%{$busqueda}%' OR 
+                              p.detalle LIKE '%{$busqueda}%')";
+        }
 
         $sql = "
             SELECT 
@@ -32,13 +62,8 @@ class Prestamos extends Controller
             JOIN libros l ON l.id = p.id_libro
         ";
 
-        if (!empty($busqueda)) {
-            $sql .= " WHERE 
-                u.nombre LIKE '%{$busqueda}%' OR 
-                l.titulo LIKE '%{$busqueda}%' OR 
-                p.estado LIKE '%{$busqueda}%' OR 
-                p.detalle LIKE '%{$busqueda}%'
-            ";
+        if (!empty($condiciones)) {
+            $sql .= " WHERE " . implode(" AND ", $condiciones);
         }
 
         $sql .= " ORDER BY p.fecha_prestamo DESC";
@@ -48,6 +73,9 @@ class Prestamos extends Controller
 
         return view('prestamos/listado', $data);
     }
+
+    // Los demás métodos (nuevo, guardar, devolver, vencidos, editar, actualizar) se mantienen igual
+    // No es necesario modificarlos para este comportamiento
 
     public function nuevo()
     {

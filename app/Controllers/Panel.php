@@ -18,8 +18,10 @@ class Panel extends BaseController
 
         if ($perfil && !empty($perfil['nombre'])) {
             session()->set('nombre_usuario', $perfil['nombre']);
+            session()->set('rol_usuario', ucfirst(trim(strtolower($perfil['rol'])))); // Guardar y normalizar el rol
         } else {
             session()->set('nombre_usuario', 'Usuario');
+            session()->set('rol_usuario', 'Invitado'); // Rol por defecto si no se encuentra
         }
 
         return view('panel/index');

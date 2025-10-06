@@ -15,39 +15,48 @@ class Login extends BaseController
     {
         $usuario = $this->request->getPost('usuario');
         $password = $this->request->getPost('password');
-        
+
         $usuarioModel = new UsuarioModel();
         $datosUsuario = $usuarioModel->verificarUsuario($usuario, $password);
-        
+
         if ($datosUsuario) {
+            // Buscar perfil en usuarios_biblioteca
+            $perfilModel = new UsuarioBibliotecaModel();
+            $perfil = $perfilModel->where('carne', $usuario)->first();
+
+            // Guardar datos en sesión
             session()->set([
-                'usuario' => $datosUsuario['usuario'],
-                'logged_in' => true
+                'usuario' => $usuario,
+                'logged_in' => true,
+                'nombre_usuario' => $perfil['nombre'] ?? 'Usuario',
+                'rol_usuario' => isset($perfil['rol']) ? ucfirst(trim(strtolower($perfil['rol']))) : 'Invitado'
             ]);
+
             return redirect()->to('/panel');
         } else {
             return redirect()->back()->with('error', 'Usuario o contraseña incorrectos');
         }
     }
+
     
-public function panel()
-{
-    if (!session()->get('logged_in')) {
-        return redirect()->to('/');
+    public function panel()
+    {
+        if (!session()->get('logged_in')) {
+            return redirect()->to('/');
+        }
+
+        $carne = session()->get('usuario'); // carne del usuario
+        $perfilModel = new \App\Models\UsuarioBibliotecaModel();
+        $perfil = $perfilModel->where('carne', $carne)->first();
+
+        if ($perfil && !empty($perfil['nombre'])) {
+            session()->set('nombre_usuario', $perfil['nombre']); // Guardar nombre en sesión
+        } else {
+            session()->set('nombre_usuario', 'Usuario');
+        }
+
+        return view('panel/index');
     }
-
-    $carne = session()->get('usuario'); // carne del usuario
-    $perfilModel = new \App\Models\UsuarioBibliotecaModel();
-    $perfil = $perfilModel->where('carne', $carne)->first();
-
-    if ($perfil && !empty($perfil['nombre'])) {
-        session()->set('nombre_usuario', $perfil['nombre']); // ✅ Guardar nombre en sesión
-    } else {
-        session()->set('nombre_usuario', 'Usuario');
-    }
-
-    return view('panel/index');
-}
 
 
     
