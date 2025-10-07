@@ -50,11 +50,12 @@ class LibroModel extends Model
                 prestamos.retraso,
                 usuarios_biblioteca.nombre AS nombre_usuario
             ')
-            ->join('prestamos', 'prestamos.id_libro = libros.id', 'left')
+            ->join('prestamos', 'prestamos.id_libro = libros.id AND prestamos.estado = "Prestado"', 'left')
             ->join('usuarios_biblioteca', 'usuarios_biblioteca.id = prestamos.id_usuario', 'left')
             ->orderBy('libros.codigo', 'ASC')
             ->get()->getResultArray();
     }
+
 
     // Buscar libros por título, autor o género
     public function buscarLibros($busqueda = null)

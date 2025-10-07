@@ -41,11 +41,10 @@
         <tbody>
             <?php foreach ($libros as $libro): ?>
                 <?php
+                    $estadoTexto = ucfirst(strtolower($libro['estado'] ?? 'Disponible'));
                     $clase = '';
-                    $estadoTexto = 'Disponible';
 
-                    if (!empty($libro['nombre_usuario'])) {
-                        $estadoTexto = 'Prestado';
+                    if ($estadoTexto === 'Prestado') {
                         $hoy = date('Y-m-d');
                         $fechaDevolucion = !empty($libro['fecha_devolucion']) ? date('Y-m-d', strtotime($libro['fecha_devolucion'])) : null;
 

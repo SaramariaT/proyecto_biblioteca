@@ -75,7 +75,7 @@ class PrestamoModel extends Model
     }
 
     /**
-     * Marcar préstamo como devuelto
+     * Marcar préstamo como devuelto y actualizar estado del libro
      */
     public function marcarDevueltoConRetraso($id)
     {
@@ -87,6 +87,7 @@ class PrestamoModel extends Model
         $hoy = date('Y-m-d');
         $retraso = ($hoy > $prestamo['fecha_devolucion']);
 
+        // Actualizar el préstamo
         $this->update($id, [
             'estado'                 => 'Devuelto',
             'fecha_real_devolucion'  => $hoy,
@@ -94,6 +95,11 @@ class PrestamoModel extends Model
             'progreso'               => 'completado'
         ]);
 
+        // Actualizar el estado del libro
+        $libroModel = new \App\Models\LibroModel();
+        $libroModel->update($prestamo['id_libro'], ['estado' => 'Disponible']);
+
+        // Reflejar los cambios en el objeto devuelto
         $prestamo['estado'] = 'Devuelto';
         $prestamo['fecha_real_devolucion'] = $hoy;
         $prestamo['retraso'] = $retraso ? 1 : 0;
@@ -117,3 +123,4 @@ class PrestamoModel extends Model
             ->getResultArray();
     }
 }
+

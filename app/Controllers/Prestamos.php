@@ -46,10 +46,10 @@ class Prestamos extends Controller
 
         // Si hay búsqueda, agregar condiciones
         if (!empty($busqueda)) {
-            $condiciones[] = "(u.nombre LIKE '%{$busqueda}%' OR 
-                              l.titulo LIKE '%{$busqueda}%' OR 
-                              p.estado LIKE '%{$busqueda}%' OR 
-                              p.detalle LIKE '%{$busqueda}%')";
+        $condiciones[] = "(u.nombre LIKE '%{$busqueda}%' OR 
+                        l.titulo LIKE '%{$busqueda}%' OR 
+                        p.estado LIKE '%{$busqueda}%' OR 
+                        p.progreso LIKE '%{$busqueda}%')";
         }
 
         $sql = "
@@ -112,15 +112,17 @@ class Prestamos extends Controller
         return redirect()->to(base_url('prestamos'))->with('mensaje', 'Préstamo registrado correctamente');
     }
 
-    public function devolver($id)
+        public function devolver($id)
     {
         $prestamo = $this->modelo->marcarDevueltoConRetraso($id);
-        if ($prestamo) {
-            $this->libroModel->update($prestamo['id_libro'], ['estado' => 'Disponible']);
+
+        if (!$prestamo) {
+            return redirect()->to(base_url('prestamos'))->with('error', 'No se encontró el préstamo.');
         }
 
         return redirect()->to(base_url('prestamos'))->with('mensaje', 'Préstamo devuelto correctamente');
     }
+
 
     public function vencidos()
     {

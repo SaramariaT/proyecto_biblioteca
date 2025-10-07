@@ -19,7 +19,7 @@
     <!-- 🔍 Buscador tamaño intermedio -->
     <form method="get" action="<?= base_url('prestamos') ?>" class="mb-4">
         <div class="d-flex flex-wrap gap-2 align-items-center">
-            <input type="text" name="busqueda" class="form-control" style="width: 400px;" placeholder="Buscar por usuario, libro, estado o detalle" value="<?= esc($busqueda ?? '') ?>">
+            <input type="text" name="busqueda" class="form-control" style="width: 400px;" placeholder="Buscar por usuario o libro" value="<?= esc($busqueda ?? '') ?>">
             <button type="submit" class="btn btn-success">Buscar</button>
             <a href="<?= base_url('prestamos') ?>" class="btn btn-secondary">Limpiar</a>
         </div>
