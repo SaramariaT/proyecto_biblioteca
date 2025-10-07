@@ -42,15 +42,18 @@
             <?php foreach ($libros as $libro): ?>
                 <?php
                     $clase = '';
-                    // Determinar clase y estado
-                    if (isset($libro['retraso']) && intval($libro['retraso']) === 1) {
-                        $clase = 'retrasado';
+                    $estadoTexto = 'Disponible';
+
+                    if (!empty($libro['nombre_usuario'])) {
                         $estadoTexto = 'Prestado';
-                    } elseif (!empty($libro['nombre_usuario'])) {
-                        $clase = 'vigente';
-                        $estadoTexto = 'Prestado';
-                    } else {
-                        $estadoTexto = 'Disponible';
+                        $hoy = date('Y-m-d');
+                        $fechaDevolucion = !empty($libro['fecha_devolucion']) ? date('Y-m-d', strtotime($libro['fecha_devolucion'])) : null;
+
+                        if ($fechaDevolucion && $fechaDevolucion < $hoy) {
+                            $clase = 'retrasado'; // rojo
+                        } else {
+                            $clase = 'vigente'; // verde
+                        }
                     }
                 ?>
                 <tr class="<?= $clase ?>">
@@ -73,7 +76,7 @@
     </table>
 
     <div class="leyenda">
-        <strong>Nota:</strong> Las filas en <span style="color: #a94442;">rojo</span> indican préstamos vencidos.
+        <strong>Nota:</strong> Las filas en <span style="color: #a94442;">rojo</span> indican préstamos vencidos. Las filas en <span style="color: #3c763d;">verde</span> indican préstamos vigentes.
     </div>
 </body>
 </html>
